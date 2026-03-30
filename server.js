@@ -34,7 +34,9 @@ const readQuota = () => {
 };
 const writeQuota = (data) => fs.writeFileSync(QUOTA_DB_PATH, JSON.stringify(data, null, 2));
 
-// --- 核心 API 接口 (保留配额与记录功能) ---
+// --- 核心 API ---
+app.get('/api/test', (req, res) => res.json({ ok: true, service: 'shanji-ledger' }));
+
 app.get('/api/records', (req, res) => res.json(readDb()));
 
 app.post('/api/records', (req, res) => {
@@ -54,9 +56,17 @@ app.get('/api/user/quota', (req, res) => {
 
 app.get('/health', (req, res) => res.json({ status: 'OK', service: 'shanji-ledger' }));
 
-// --- 核心：网页路由兜底，解决白屏 ---
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+// --- 网页兜底：仅 GET/HEAD、且路径不以 /api 开头时回 index.html ---
+app.use((req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return next();
+  }
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, 'index.html'), (err) => {
+    if (err) next(err);
+  });
 });
 
 app.listen(PORT, HOST, () => {
