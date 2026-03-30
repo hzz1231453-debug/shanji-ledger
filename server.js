@@ -1,11 +1,7 @@
-import { fileURLToPath } from 'url';
-import path from 'path';
-import express from 'express';
-import cors from 'cors';
-import fs from 'node:fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const path = require('path');
+const express = require('express');
+const cors = require('cors');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,14 +19,20 @@ const QUOTA_DB_PATH = path.resolve(process.cwd(), 'ledger-quota.json');
 
 // --- 数据库存取逻辑 ---
 const readDb = () => {
-  try { return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8')); } 
-  catch { return []; }
+  try {
+    return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+  } catch {
+    return [];
+  }
 };
 const writeDb = (data) => fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
 
 const readQuota = () => {
-  try { return JSON.parse(fs.readFileSync(QUOTA_DB_PATH, 'utf-8')); } 
-  catch { return {}; }
+  try {
+    return JSON.parse(fs.readFileSync(QUOTA_DB_PATH, 'utf-8'));
+  } catch {
+    return {};
+  }
 };
 const writeQuota = (data) => fs.writeFileSync(QUOTA_DB_PATH, JSON.stringify(data, null, 2));
 
@@ -42,7 +44,7 @@ app.get('/api/records', (req, res) => res.json(readDb()));
 app.post('/api/records', (req, res) => {
   const rows = readDb();
   const next = { ...req.body, internalId: req.body.internalId || Date.now().toString() };
-  const merged = [next, ...rows.filter(r => r.internalId !== next.internalId)];
+  const merged = [next, ...rows.filter((r) => r.internalId !== next.internalId)];
   writeDb(merged);
   res.status(201).json({ ok: true, record: next });
 });
