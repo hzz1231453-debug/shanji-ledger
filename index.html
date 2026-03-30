@@ -2,33 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <script>
-      (function () {
-        function pickLang() {
-          try {
-            var s = localStorage.getItem('app_lang');
-            if (s === 'zh' || s === 'ko' || s === 'jp' || s === 'en') return s;
-          } catch (e) {}
-          var n = (navigator.language || '').toLowerCase();
-          if (n.indexOf('ko') === 0) return 'ko';
-          if (n.indexOf('ja') === 0) return 'jp';
-          if (n.indexOf('en') === 0) return 'en';
-          if (n.indexOf('zh') === 0) return 'zh';
-          return 'zh';
-        }
-        var map = {
-          zh: '/manifest.zh.json',
-          ko: '/manifest.ko.json',
-          jp: '/manifest.ja.json',
-          en: '/manifest.en.json',
-        };
-        var href = map[pickLang()] || map.zh;
-        var link = document.createElement('link');
-        link.rel = 'manifest';
-        link.href = href;
-        document.head.appendChild(link);
-      })();
-    </script>
+    <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#020617" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -266,25 +240,6 @@
       .pwa-btn[data-visible='true'] {
         display: block;
       }
-      .ios-hint {
-        margin-top: 6px;
-        border-radius: 14px;
-        padding: 7px 9px;
-        font-size: 10px;
-        line-height: 1.5;
-        background: radial-gradient(circle at top, rgba(24, 24, 27, 0.95), rgba(15, 23, 42, 0.98));
-        border: 1px solid rgba(250, 204, 21, 0.7);
-        color: rgba(250, 250, 249, 0.9);
-        display: none;
-        text-align: center;
-        box-shadow:
-          0 12px 30px rgba(0, 0, 0, 0.85),
-          0 0 0 1px rgba(15, 23, 42, 0.9);
-        animation: ios-breath 2.6s ease-in-out infinite;
-      }
-      .ios-hint[data-visible='true'] {
-        display: block;
-      }
       .cta-shell {
         margin-top: 4px;
         border-radius: 999px;
@@ -379,21 +334,6 @@
             0 0 0 1px rgba(15, 23, 42, 0.9);
         }
       }
-      @keyframes ios-breath {
-        0%,
-        100% {
-          transform: translateY(0);
-          box-shadow:
-            0 0 0 1px rgba(250, 204, 21, 0.7),
-            0 10px 22px rgba(0, 0, 0, 0.8);
-        }
-        50% {
-          transform: translateY(-1px);
-          box-shadow:
-            0 0 0 1px rgba(250, 204, 21, 0.85),
-            0 16px 32px rgba(250, 204, 21, 0.4);
-        }
-      }
       @media (min-width: 640px) {
         .shell {
           padding: 20px 22px 22px;
@@ -445,7 +385,6 @@
             <button class="email-btn" type="button" id="email-btn"></button>
           </div>
           <button class="pwa-btn" type="button" id="a2hs-btn" data-visible="false"></button>
-          <div class="ios-hint" id="ios-hint" data-visible="false"></div>
         </section>
 
         <section class="section upgrade" id="pro-section">
@@ -486,16 +425,16 @@
             basicThumb4: '自动汇总',
             emailLabel: '输入邮箱申请，即刻开始。',
             emailBtn: '获取验证码',
-            pwaBtn: '一键添加到手机桌面（PWA）',
+            pwaBtn: '添加至主屏幕',
             proKicker: 'PRO · UPGRADE',
             proTitle: '升级版：解锁无限可能',
             proDesc: '跨门店对比、长期趋势、重点预警，一眼看懂利润密码。',
-            proPill: '无限次数',
+            proPill: '无限额度',
             proThumb1: '盈利趋势',
             proThumb2: '多店对比',
             proThumb3: '税前预估',
             proThumb4: '合伙人报告',
-            payLabel: '¥ 158 永久升级',
+            payLabel: '添加至主屏幕',
             ctaNote: '一次买断，后续升级与修复全部免费推送。',
           },
           ko: {
@@ -503,46 +442,46 @@
             basicTitle: '기본판: 장부 · 번역, 1초 정리',
             basicDesc:
               '영수증 사진 + 4개 언어 번역 + 자동 분류, 작은 가게 현금 흐름을 한 눈에.',
-            basicPill: '무료 이용 한도 포함 (횟수 표기 없음)',
+            basicPill: '무료 한도 포함',
             basicThumb1: '사진으로 입력',
             basicThumb2: '음성으로 입력',
             basicThumb3: '다국어 영수증',
             basicThumb4: '자동 집계',
             emailLabel: '이메일을 입력하면 바로 시작할 수 있습니다.',
             emailBtn: '인증 코드 받기',
-            pwaBtn: '휴대폰 홈 화면에 추가 (PWA)',
+            pwaBtn: '홈 화면에 추가',
             proKicker: 'PRO · UPGRADE',
             proTitle: '업그레이드: 무한한 가능성',
             proDesc: '매장별 비교, 장기 추세, 중요 알림까지 한 번에 확인.',
-            proPill: '무제한 사용 (숫자 미표기)',
+            proPill: '무제한 한도',
             proThumb1: '이익 추세',
             proThumb2: '매장별 비교',
             proThumb3: '세전 추정',
             proThumb4: '파트너 리포트',
-            payLabel: '29,000 ₩ 업그레이드',
+            payLabel: '홈 화면에 추가',
             ctaNote: '일시불 결제, 이후 기능 업데이트와 패치는 모두 무료입니다.',
           },
           jp: {
             basicKicker: 'ベーシック版 · PRODUCT',
             basicTitle: '基本版：記帳と翻訳を一瞬で',
             basicDesc: 'レシート撮影 + 4言語翻訳 + 自動分類で、小さな店舗の現金動きを一画面に。',
-            basicPill: '無料枠つき（回数は非公開）',
+            basicPill: '無料枠込み',
             basicThumb1: '写真で入力',
             basicThumb2: '音声で入力',
             basicThumb3: '多言語レシート',
             basicThumb4: '自動サマリ',
             emailLabel: 'メールアドレスを入力して、今すぐ始めましょう。',
             emailBtn: '認証コードを受け取る',
-            pwaBtn: 'スマホのホーム画面に追加（PWA）',
+            pwaBtn: 'ホーム画面に追加',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'アップグレード版：無限の可能性',
             proDesc: '店舗別比較、長期トレンド、重要アラートまで一目で把握。',
-            proPill: '回数無制限（数字は出さない）',
+            proPill: '無制限枠',
             proThumb1: '利益トレンド',
             proThumb2: '店舗別比較',
             proThumb3: '税引前試算',
             proThumb4: 'パートナー用レポート',
-            payLabel: '¥ 3,200 JPY ⚡',
+            payLabel: 'ホーム画面に追加',
             ctaNote: '一度の買い切りで、その後のアップデートと修正はすべて無料です。',
           },
           en: {
@@ -550,24 +489,24 @@
             basicTitle: 'Basic: bookkeeping & translation in a second',
             basicDesc:
               'Receipt photos, 4-language translation, and smart tagging – one panel for all cashflow.',
-            basicPill: 'Includes free allowance (no explicit counts)',
+            basicPill: 'Free Tier Included',
             basicThumb1: 'Photo capture',
             basicThumb2: 'Voice capture',
             basicThumb3: 'Multilingual bills',
             basicThumb4: 'Auto summary',
             emailLabel: 'Enter your email to apply and start instantly.',
             emailBtn: 'Get verification code',
-            pwaBtn: 'One‑tap “Add to Home Screen” (PWA)',
+            pwaBtn: 'Add to Home Screen',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'Pro: unlock unlimited potential',
             proDesc:
               'Multi-store comparisons, long-term trends, and critical alerts in one view.',
-            proPill: 'No usage ceiling (unlimited)',
+            proPill: 'Unlimited Access',
             proThumb1: 'Profit trends',
             proThumb2: 'Store comparisons',
             proThumb3: 'Pre‑tax preview',
             proThumb4: 'Partner-ready reports',
-            payLabel: '$ 21.50 Upgrade',
+            payLabel: 'Add to Home Screen',
             ctaNote: 'One-time payment. All future upgrades and fixes are pushed for free.',
           },
         };
@@ -635,7 +574,6 @@
         // PWA A2HS
         var deferredPrompt = null;
         var a2hsBtn = document.getElementById('a2hs-btn');
-        var iosHint = document.getElementById('ios-hint');
         window.addEventListener('beforeinstallprompt', function (e) {
           e.preventDefault();
           deferredPrompt = e;
@@ -650,20 +588,21 @@
           });
         });
 
-        // iOS 強行指路：顯示黑金磨砂提示
-        var ua = (navigator.userAgent || '').toLowerCase();
-        var isIOS = /iphone|ipad|ipod/.test(ua);
-        var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        if (isIOS && !isStandalone) {
-          iosHint.textContent =
-            '💡 想要 APP 體驗？點擊 Safari 下方【分享】圖標（向上箭頭），選擇【添加到主屏幕】即可！';
-          iosHint.setAttribute('data-visible', 'true');
-        }
-
-        // 支付按鈕事件鉤子
+        // 金色主按鈕：直接觸發系統安裝彈窗
         document.getElementById('pay-btn').addEventListener('click', function () {
-          window.dispatchEvent(new CustomEvent('flash-ledger-pay-click'));
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.finally(function () {
+            deferredPrompt = null;
+            a2hsBtn.setAttribute('data-visible', 'false');
+          });
         });
+
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/service-worker.js').catch(function () {});
+          });
+        }
       })();
     </script>
   </body>
