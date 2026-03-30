@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,6 +37,22 @@ const readQuota = () => {
 };
 const writeQuota = (data) => fs.writeFileSync(QUOTA_DB_PATH, JSON.stringify(data, null, 2));
 
+// --- 郵件發送（Gmail App Password，走環境變數） ---
+const MAIL_USER = process.env.MAIL_USER || '';
+const MAIL_PASS = process.env.MAIL_PASS || '';
+const MAIL_TO = process.env.MAIL_TO || MAIL_USER;
+
+let mailer = null;
+if (MAIL_USER && MAIL_PASS) {
+  mailer = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: MAIL_USER,
+      pass: MAIL_PASS,
+    },
+  });
+}
+
 // --- 核心 API ---
 app.get('/api/test', (req, res) => res.json({ ok: true, service: 'shanji-ledger' }));
 
@@ -56,19 +73,33 @@ app.get('/api/user/quota', (req, res) => {
   res.json({ ok: true, used: q.used, total: q.total, remaining: Math.max(0, q.total - q.used) });
 });
 
+app.post('/api/notify', async (req, res) => {
+  if (!mailer) {
+    return res.status(500).json({ ok: false, error: 'MAIL_NOT_CONFIGURED' });
+  }
+  const subject = req.body?.subject || 'Flash Ledger payment notice';
+  const text =
+    req.body?.text ||
+    'A new Flash Ledger payment or quota event occurred. Please check your dashboard.';
+  try {
+    await mailer.sendMail({
+      from: MAIL_USER,
+      to: MAIL_TO || MAIL_USER,
+      subject,
+      text,
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[MAIL_ERROR]', err);
+    res.status(500).json({ ok: false, error: 'MAIL_SEND_FAILED' });
+  }
+});
+
 app.get('/health', (req, res) => res.json({ status: 'OK', service: 'shanji-ledger' }));
 
-// --- 网页兜底：仅 GET/HEAD、且路径不以 /api 开头时回 index.html ---
-app.use((req, res, next) => {
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
-    return next();
-  }
-  if (req.path.startsWith('/api')) {
-    return next();
-  }
-  res.sendFile(path.join(__dirname, 'index.html'), (err) => {
-    if (err) next(err);
-  });
+// --- 网页兜底：用 '(.*)'，避免原始 PathError，又確保 SPA 任意路徑回 index.html ---
+app.get('(.*)', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(PORT, HOST, () => {
