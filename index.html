@@ -513,7 +513,7 @@
             payLabel: '添加至手机 APP',
             installFallbackTitle: '安装指引',
             installFallbackBody:
-              '💡 當前瀏覽器暫不支援一鍵安裝，請從瀏覽器選單完成 APP 安裝。',
+              '⚡ 立即领取手机 APP 永久权限',
             installFallbackClose: '知道了',
             ctaNote: '一次买断，后续升级与修复全部免费推送。',
           },
@@ -541,7 +541,7 @@
             payLabel: '휴대폰 APP에 추가',
             installFallbackTitle: '설치 안내',
             installFallbackBody:
-              '💡 현재 브라우저에서는 원클릭 설치가 제한됩니다. 브라우저 메뉴에서 APP 설치를 진행해 주세요.',
+              '⚡ 立即领取手机 APP 永久权限',
             installFallbackClose: '확인',
             ctaNote: '일시불 결제, 이후 기능 업데이트와 패치는 모두 무료입니다.',
           },
@@ -568,7 +568,7 @@
             payLabel: 'スマホ APPに追加',
             installFallbackTitle: 'インストール案内',
             installFallbackBody:
-              '💡 このブラウザはワンタップ導入に未対応です。ブラウザメニューから APP をインストールしてください。',
+              '⚡ 立即领取手机 APP 永久权限',
             installFallbackClose: 'OK',
             ctaNote: '一度の買い切りで、その後のアップデートと修正はすべて無料です。',
           },
@@ -597,7 +597,7 @@
             payLabel: 'Add to Mobile APP',
             installFallbackTitle: 'Install Guide',
             installFallbackBody:
-              '💡 One-tap install is unavailable in this browser. Please finish APP install from browser menu.',
+              '⚡ 立即领取手机 APP 永久权限',
             installFallbackClose: 'Got it',
             ctaNote: 'One-time payment. All future upgrades and fixes are pushed for free.',
           },
@@ -671,6 +671,19 @@
         var a2hsBtn = document.getElementById('a2hs-btn');
         var fallbackMask = document.getElementById('install-fallback-mask');
         var fallbackClose = document.getElementById('install-fallback-close');
+        function isIOSDevice() {
+          var ua = navigator.userAgent || '';
+          return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+        function isIOS164Plus() {
+          if (!isIOSDevice()) return false;
+          var ua = navigator.userAgent || '';
+          var m = ua.match(/OS (\d+)_?(\d+)?/);
+          if (!m) return false;
+          var major = Number(m[1] || 0);
+          var minor = Number(m[2] || 0);
+          return major > 16 || (major === 16 && minor >= 4);
+        }
         function openFallback() {
           fallbackMask.setAttribute('data-open', 'true');
         }
@@ -686,6 +699,9 @@
           deferredPrompt = e;
           a2hsBtn.setAttribute('data-visible', 'true');
         });
+        if (isIOSDevice() && !window.matchMedia('(display-mode: standalone)').matches) {
+          a2hsBtn.setAttribute('data-visible', 'true');
+        }
         a2hsBtn.addEventListener('click', function () {
           if (!deferredPrompt) {
             openFallback();
@@ -700,6 +716,10 @@
 
         // 金色主按鈕：直接觸發系統安裝彈窗
         document.getElementById('pay-btn').addEventListener('click', function () {
+          if (!deferredPrompt && isIOS164Plus()) {
+            openFallback();
+            return;
+          }
           if (!deferredPrompt) {
             openFallback();
             return;
