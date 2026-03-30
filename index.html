@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function () {
+        function pickLang() {
+          try {
+            var s = localStorage.getItem('app_lang');
+            if (s === 'zh' || s === 'ko' || s === 'jp' || s === 'en') return s;
+          } catch (e) {}
+          var n = (navigator.language || '').toLowerCase();
+          if (n.indexOf('ko') === 0) return 'ko';
+          if (n.indexOf('ja') === 0) return 'jp';
+          if (n.indexOf('en') === 0) return 'en';
+          if (n.indexOf('zh') === 0) return 'zh';
+          return 'zh';
+        }
+        var map = {
+          zh: '/manifest.zh.json',
+          ko: '/manifest.ko.json',
+          jp: '/manifest.ja.json',
+          en: '/manifest.en.json',
+        };
+        var href = map[pickLang()] || map.zh;
+        var link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = href;
+        document.head.appendChild(link);
+      })();
+    </script>
+    <meta name="theme-color" content="#171717" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="闪记账本" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      href="/icons/home-bottom-quota.webp"
+      as="image"
+      type="image/webp"
+    />
+    <link
+      rel="preload"
+      href="/icons/home-bottom-contact.webp"
+      as="image"
+      type="image/webp"
+    />
+    <link
+      rel="preload"
+      href="/icons/home-bottom-guide.webp"
+      as="image"
+      type="image/webp"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>闪记账本</title>
+    <script type="module" crossorigin src="/assets/index-ivlRXRWQ.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/chunk-DseTPa7n.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-DEKG2A2B.css">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="x-build-hash" content="7e798e41412d" />
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
