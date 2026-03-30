@@ -6,8 +6,8 @@
     <meta name="theme-color" content="#020617" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="闪记账本" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="闪记" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -336,12 +336,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 8px;
+        line-height: 1;
         animation: breath 2.4s ease-in-out infinite;
       }
       .cta-btn span.icon {
         font-size: 16px;
-        transform: translateY(1px);
+        transform: translateY(0);
+        display: inline-flex;
+        align-items: center;
       }
       .cta-note {
         margin-top: 6px;
@@ -510,7 +513,7 @@
             payLabel: '添加至手机 APP',
             installFallbackTitle: '安装指引',
             installFallbackBody:
-              '💡 想要 APP 體驗？點擊 Safari 下方【分享】圖標（向上箭頭），再選擇【添加到主屏幕】即可！',
+              '💡 當前瀏覽器暫不支援一鍵安裝，請從瀏覽器選單完成 APP 安裝。',
             installFallbackClose: '知道了',
             ctaNote: '一次买断，后续升级与修复全部免费推送。',
           },
@@ -538,7 +541,7 @@
             payLabel: '휴대폰 APP에 추가',
             installFallbackTitle: '설치 안내',
             installFallbackBody:
-              '💡 APP처럼 쓰고 싶다면 Safari 하단의 공유 아이콘(위쪽 화살표)을 누른 뒤, 홈 화면에 추가를 선택하세요.',
+              '💡 현재 브라우저에서는 원클릭 설치가 제한됩니다. 브라우저 메뉴에서 APP 설치를 진행해 주세요.',
             installFallbackClose: '확인',
             ctaNote: '일시불 결제, 이후 기능 업데이트와 패치는 모두 무료입니다.',
           },
@@ -565,7 +568,7 @@
             payLabel: 'スマホ APPに追加',
             installFallbackTitle: 'インストール案内',
             installFallbackBody:
-              '💡 APP体験をしたい場合は、Safari下部の共有アイコン（上向き矢印）を押し、ホーム画面に追加を選択してください。',
+              '💡 このブラウザはワンタップ導入に未対応です。ブラウザメニューから APP をインストールしてください。',
             installFallbackClose: 'OK',
             ctaNote: '一度の買い切りで、その後のアップデートと修正はすべて無料です。',
           },
@@ -594,7 +597,7 @@
             payLabel: 'Add to Mobile APP',
             installFallbackTitle: 'Install Guide',
             installFallbackBody:
-              '💡 Want APP mode? Tap Safari share icon (up arrow), then choose Add to Home Screen.',
+              '💡 One-tap install is unavailable in this browser. Please finish APP install from browser menu.',
             installFallbackClose: 'Got it',
             ctaNote: 'One-time payment. All future upgrades and fixes are pushed for free.',
           },
