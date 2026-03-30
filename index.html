@@ -240,6 +240,57 @@
       .pwa-btn[data-visible='true'] {
         display: block;
       }
+      .install-fallback-mask {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 18px;
+      }
+      .install-fallback-mask[data-open='true'] {
+        display: flex;
+      }
+      .install-fallback-card {
+        width: min(100%, 420px);
+        border-radius: 18px;
+        border: 1px solid rgba(250, 204, 21, 0.75);
+        background: radial-gradient(circle at top, rgba(24, 24, 27, 0.96), rgba(15, 23, 42, 0.98));
+        color: #f8fafc;
+        padding: 14px 14px 12px;
+        box-shadow:
+          0 0 0 1px rgba(15, 23, 42, 0.9),
+          0 20px 42px rgba(0, 0, 0, 0.85);
+        animation: install-fallback-breath 2.6s ease-in-out infinite;
+      }
+      .install-fallback-title {
+        font-size: 12px;
+        font-weight: 800;
+        color: #facc15;
+        margin-bottom: 6px;
+        text-align: center;
+      }
+      .install-fallback-body {
+        font-size: 11px;
+        line-height: 1.6;
+        color: rgba(241, 245, 249, 0.92);
+        text-align: center;
+      }
+      .install-fallback-close {
+        margin-top: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 999px;
+        padding: 8px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        background: linear-gradient(120deg, #facc15, #f97316);
+        color: #111827;
+        cursor: pointer;
+      }
       .cta-shell {
         margin-top: 4px;
         border-radius: 999px;
@@ -334,6 +385,21 @@
             0 0 0 1px rgba(15, 23, 42, 0.9);
         }
       }
+      @keyframes install-fallback-breath {
+        0%,
+        100% {
+          transform: translateY(0);
+          box-shadow:
+            0 0 0 1px rgba(250, 204, 21, 0.72),
+            0 16px 30px rgba(0, 0, 0, 0.86);
+        }
+        50% {
+          transform: translateY(-1px);
+          box-shadow:
+            0 0 0 1px rgba(250, 204, 21, 0.95),
+            0 20px 38px rgba(250, 204, 21, 0.32);
+        }
+      }
       @media (min-width: 640px) {
         .shell {
           padding: 20px 22px 22px;
@@ -410,6 +476,13 @@
         </section>
       </div>
     </div>
+    <div class="install-fallback-mask" id="install-fallback-mask" data-open="false" role="dialog" aria-modal="true">
+      <div class="install-fallback-card">
+        <div class="install-fallback-title" id="install-fallback-title"></div>
+        <div class="install-fallback-body" id="install-fallback-body"></div>
+        <button type="button" class="install-fallback-close" id="install-fallback-close"></button>
+      </div>
+    </div>
 
     <script>
       (function () {
@@ -425,7 +498,7 @@
             basicThumb4: '自动汇总',
             emailLabel: '输入邮箱申请，即刻开始。',
             emailBtn: '获取验证码',
-            pwaBtn: '添加至主屏幕',
+            pwaBtn: '添加至手机 APP',
             proKicker: 'PRO · UPGRADE',
             proTitle: '升级版：解锁无限可能',
             proDesc: '跨门店对比、长期趋势、重点预警，一眼看懂利润密码。',
@@ -434,7 +507,11 @@
             proThumb2: '多店对比',
             proThumb3: '税前预估',
             proThumb4: '合伙人报告',
-            payLabel: '添加至主屏幕',
+            payLabel: '添加至手机 APP',
+            installFallbackTitle: '安装指引',
+            installFallbackBody:
+              '💡 想要 APP 體驗？點擊 Safari 下方【分享】圖標（向上箭頭），再選擇【添加到主屏幕】即可！',
+            installFallbackClose: '知道了',
             ctaNote: '一次买断，后续升级与修复全部免费推送。',
           },
           ko: {
@@ -449,7 +526,7 @@
             basicThumb4: '자동 집계',
             emailLabel: '이메일을 입력하면 바로 시작할 수 있습니다.',
             emailBtn: '인증 코드 받기',
-            pwaBtn: '홈 화면에 추가',
+            pwaBtn: '휴대폰 APP에 추가',
             proKicker: 'PRO · UPGRADE',
             proTitle: '업그레이드: 무한한 가능성',
             proDesc: '매장별 비교, 장기 추세, 중요 알림까지 한 번에 확인.',
@@ -458,7 +535,11 @@
             proThumb2: '매장별 비교',
             proThumb3: '세전 추정',
             proThumb4: '파트너 리포트',
-            payLabel: '홈 화면에 추가',
+            payLabel: '휴대폰 APP에 추가',
+            installFallbackTitle: '설치 안내',
+            installFallbackBody:
+              '💡 APP처럼 쓰고 싶다면 Safari 하단의 공유 아이콘(위쪽 화살표)을 누른 뒤, 홈 화면에 추가를 선택하세요.',
+            installFallbackClose: '확인',
             ctaNote: '일시불 결제, 이후 기능 업데이트와 패치는 모두 무료입니다.',
           },
           jp: {
@@ -472,7 +553,7 @@
             basicThumb4: '自動サマリ',
             emailLabel: 'メールアドレスを入力して、今すぐ始めましょう。',
             emailBtn: '認証コードを受け取る',
-            pwaBtn: 'ホーム画面に追加',
+            pwaBtn: 'スマホ APPに追加',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'アップグレード版：無限の可能性',
             proDesc: '店舗別比較、長期トレンド、重要アラートまで一目で把握。',
@@ -481,7 +562,11 @@
             proThumb2: '店舗別比較',
             proThumb3: '税引前試算',
             proThumb4: 'パートナー用レポート',
-            payLabel: 'ホーム画面に追加',
+            payLabel: 'スマホ APPに追加',
+            installFallbackTitle: 'インストール案内',
+            installFallbackBody:
+              '💡 APP体験をしたい場合は、Safari下部の共有アイコン（上向き矢印）を押し、ホーム画面に追加を選択してください。',
+            installFallbackClose: 'OK',
             ctaNote: '一度の買い切りで、その後のアップデートと修正はすべて無料です。',
           },
           en: {
@@ -496,7 +581,7 @@
             basicThumb4: 'Auto summary',
             emailLabel: 'Enter your email to apply and start instantly.',
             emailBtn: 'Get verification code',
-            pwaBtn: 'Add to Home Screen',
+            pwaBtn: 'Add to Mobile APP',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'Pro: unlock unlimited potential',
             proDesc:
@@ -506,7 +591,11 @@
             proThumb2: 'Store comparisons',
             proThumb3: 'Pre‑tax preview',
             proThumb4: 'Partner-ready reports',
-            payLabel: 'Add to Home Screen',
+            payLabel: 'Add to Mobile APP',
+            installFallbackTitle: 'Install Guide',
+            installFallbackBody:
+              '💡 Want APP mode? Tap Safari share icon (up arrow), then choose Add to Home Screen.',
+            installFallbackClose: 'Got it',
             ctaNote: 'One-time payment. All future upgrades and fixes are pushed for free.',
           },
         };
@@ -549,6 +638,9 @@
           document.getElementById('pay-label').textContent = dict.payLabel;
           document.getElementById('cta-note').textContent = dict.ctaNote;
           document.getElementById('a2hs-btn').textContent = dict.pwaBtn;
+          document.getElementById('install-fallback-title').textContent = dict.installFallbackTitle;
+          document.getElementById('install-fallback-body').textContent = dict.installFallbackBody;
+          document.getElementById('install-fallback-close').textContent = dict.installFallbackClose;
         }
 
         langButtons.forEach(function (btn) {
@@ -574,13 +666,28 @@
         // PWA A2HS
         var deferredPrompt = null;
         var a2hsBtn = document.getElementById('a2hs-btn');
+        var fallbackMask = document.getElementById('install-fallback-mask');
+        var fallbackClose = document.getElementById('install-fallback-close');
+        function openFallback() {
+          fallbackMask.setAttribute('data-open', 'true');
+        }
+        function closeFallback() {
+          fallbackMask.setAttribute('data-open', 'false');
+        }
+        fallbackClose.addEventListener('click', closeFallback);
+        fallbackMask.addEventListener('click', function (e) {
+          if (e.target === fallbackMask) closeFallback();
+        });
         window.addEventListener('beforeinstallprompt', function (e) {
           e.preventDefault();
           deferredPrompt = e;
           a2hsBtn.setAttribute('data-visible', 'true');
         });
         a2hsBtn.addEventListener('click', function () {
-          if (!deferredPrompt) return;
+          if (!deferredPrompt) {
+            openFallback();
+            return;
+          }
           deferredPrompt.prompt();
           deferredPrompt.userChoice.finally(function () {
             deferredPrompt = null;
@@ -590,7 +697,10 @@
 
         // 金色主按鈕：直接觸發系統安裝彈窗
         document.getElementById('pay-btn').addEventListener('click', function () {
-          if (!deferredPrompt) return;
+          if (!deferredPrompt) {
+            openFallback();
+            return;
+          }
           deferredPrompt.prompt();
           deferredPrompt.userChoice.finally(function () {
             deferredPrompt = null;
@@ -599,9 +709,13 @@
         });
 
         if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js').catch(function () {});
           window.addEventListener('load', function () {
             navigator.serviceWorker.register('/service-worker.js').catch(function () {});
           });
+          window.setTimeout(function () {
+            navigator.serviceWorker.register('/service-worker.js').catch(function () {});
+          }, 10000);
         }
       })();
     </script>
