@@ -43,11 +43,16 @@ const otpStore = new Map();
 const MAIL_USER = process.env.MAIL_USER || '';
 const MAIL_PASS = process.env.MAIL_PASS || '';
 const MAIL_TO = process.env.MAIL_TO || MAIL_USER;
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
+const SMTP_SECURE = String(process.env.SMTP_SECURE || (SMTP_PORT === 465 ? 'true' : 'false')) === 'true';
 
 let mailer = null;
 if (MAIL_USER && MAIL_PASS) {
   mailer = nodemailer.createTransport({
-    service: 'gmail',
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_SECURE,
     auth: {
       user: MAIL_USER,
       pass: MAIL_PASS,
