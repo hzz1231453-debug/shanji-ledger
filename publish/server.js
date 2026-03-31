@@ -4,11 +4,12 @@ const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+/** 老字号：固定只监听 5000，不使用 process.env.PORT（避免出现 8080） */
+const PORT = 5000;
 const HOST = '0.0.0.0';
 
 const RESEND_FROM = 'onboarding@resend.dev';
-const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const RESEND_API_KEY = String(process.env.RESEND_API_KEY || '').trim();
 /** 營運通知信收件（選填）；驗證碼主要寄往使用者輸入的郵箱 */
 const MAIL_TO = process.env.MAIL_TO || '';
 
@@ -97,10 +98,15 @@ async function sendViaResend({ to, subject, text }) {
 }
 
 const resendReady = Boolean(RESEND_API_KEY);
+console.log(
+  '[RESEND] RESEND_API_KEY 已讀取: ' +
+    (resendReady ? '是 | ' : '否 | ') +
+    (resendReady ? 'length=' + RESEND_API_KEY.length + ' | ' : '') +
+    'from=' +
+    RESEND_FROM,
+);
 if (!resendReady) {
-  console.warn('[RESEND] RESEND_API_KEY 未設定，發信 API 將回 500');
-} else {
-  console.log('[RESEND] 已載入 API Key（長度 ' + RESEND_API_KEY.length + '），發件人: ' + RESEND_FROM);
+  console.warn('[RESEND] 未設定有效 RESEND_API_KEY，/api/verify/send 與 /api/notify 將回 500');
 }
 
 app.get('/api/test', (req, res) => res.json({ ok: true, service: 'shanji-ledger' }));
@@ -206,12 +212,14 @@ app.post('/api/verify/check', (req, res) => {
   return res.json({ ok: true, verified: true });
 });
 
-app.get('/health', (req, res) => res.json({ status: 'OK', service: 'shanji-ledger' }));
+app.get('/health', (req, res) =>
+  res.json({ status: 'OK', service: 'shanji-ledger', listenPort: PORT }),
+);
 
 app.get('(.*)', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(PORT, HOST, () => {
-  console.log(`[闪记] 启动成功，监听端口: ${PORT}`);
+  console.log(`[闪记] 启动成功，老字号固定监听端口: ${PORT} (HOST=${HOST})`);
 });
