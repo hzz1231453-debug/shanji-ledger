@@ -235,19 +235,31 @@
         font-size: 10px;
         color: rgba(148, 163, 184, 0.95);
       }
-      .pwa-btn {
+      .otp-wrap {
         margin-top: 4px;
+      }
+      .otp-input {
         width: 100%;
         border-radius: 999px;
         border: 1px dashed rgba(148, 163, 184, 0.7);
-        padding: 7px 10px;
-        font-size: 11px;
+        padding: 8px 12px;
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        text-align: center;
         background: rgba(15, 23, 42, 0.9);
         color: rgba(209, 213, 219, 0.9);
-        display: none;
+        transition: all 180ms ease;
       }
-      .pwa-btn[data-visible='true'] {
-        display: block;
+      .otp-input::placeholder {
+        letter-spacing: 0;
+        color: rgba(148, 163, 184, 0.9);
+      }
+      .otp-input[data-active='true'] {
+        border-style: solid;
+        border-color: rgba(250, 204, 21, 0.82);
+        box-shadow:
+          0 0 0 1px rgba(250, 204, 21, 0.35),
+          0 0 16px rgba(250, 204, 21, 0.26);
       }
       .install-fallback-mask {
         position: fixed;
@@ -354,6 +366,7 @@
         transform: translateY(0);
         display: inline-flex;
         align-items: center;
+        justify-content: center;
       }
       .cta-note {
         margin-top: 6px;
@@ -463,7 +476,17 @@
             <button class="email-btn" type="button" id="email-btn"></button>
           </div>
           <div class="email-status" id="email-status"></div>
-          <button class="pwa-btn" type="button" id="a2hs-btn" data-visible="false"></button>
+          <div class="otp-wrap">
+            <input
+              id="otp-input"
+              class="otp-input"
+              type="text"
+              inputmode="numeric"
+              maxlength="6"
+              placeholder="请输入4-6位验证码"
+              data-active="false"
+            />
+          </div>
         </section>
 
         <section class="section upgrade" id="pro-section">
@@ -481,6 +504,7 @@
           </div>
           <div class="cta-shell">
             <button id="pay-btn" class="cta-btn" type="button">
+              <span id="pay-icon" class="icon" style="display:none">⚡</span>
               <span id="pay-label"></span>
             </button>
           </div>
@@ -510,9 +534,9 @@
             basicThumb4: '自动汇总',
             emailLabel: '输入邮箱申请，即刻开始。',
             emailBtn: '获取验证码',
-            emailBtnPending: '完成邮箱验证',
+            emailBtnPending: '验证码已发送',
             emailBtnDone: '邮箱已验证',
-            pwaBtn: '添加至手机 APP',
+            otpPlaceholder: '请输入4-6位验证码',
             proKicker: 'PRO · UPGRADE',
             proTitle: '升级版：解锁无限可能',
             proDesc: '跨门店对比、长期趋势、重点预警，一眼看懂利润密码。',
@@ -522,8 +546,7 @@
             proThumb3: '税前预估',
             proThumb4: '合伙人报告',
             payLabelIdle: '请先验证邮箱',
-            payLabelPending: '验证通过后即可添加',
-            payLabelVerified: '⚡ 立即领取手机 APP 永久权限',
+            payLabelVerified: '⚡ 添加至手机 APP',
             installFallbackTitle: '安装指引',
             installFallbackBody:
               '⚡ 立即领取手机 APP 永久权限',
@@ -542,9 +565,9 @@
             basicThumb4: '자동 집계',
             emailLabel: '이메일을 입력하면 바로 시작할 수 있습니다.',
             emailBtn: '인증 코드 받기',
-            emailBtnPending: '이메일 인증 완료',
+            emailBtnPending: '인증번호 전송됨',
             emailBtnDone: '이메일 인증됨',
-            pwaBtn: '휴대폰 APP에 추가',
+            otpPlaceholder: '4-6자리 인증번호 입력',
             proKicker: 'PRO · UPGRADE',
             proTitle: '업그레이드: 무한한 가능성',
             proDesc: '매장별 비교, 장기 추세, 중요 알림까지 한 번에 확인.',
@@ -554,8 +577,7 @@
             proThumb3: '세전 추정',
             proThumb4: '파트너 리포트',
             payLabelIdle: '먼저 이메일 인증',
-            payLabelPending: '인증 후 추가 가능',
-            payLabelVerified: '⚡ 立即领取手机 APP 永久权限',
+            payLabelVerified: '⚡ 添加至手机 APP',
             installFallbackTitle: '설치 안내',
             installFallbackBody:
               '⚡ 立即领取手机 APP 永久权限',
@@ -573,9 +595,9 @@
             basicThumb4: '自動サマリ',
             emailLabel: 'メールアドレスを入力して、今すぐ始めましょう。',
             emailBtn: '認証コードを受け取る',
-            emailBtnPending: 'メール認証を完了',
+            emailBtnPending: '認証コード送信済み',
             emailBtnDone: 'メール認証済み',
-            pwaBtn: 'スマホ APPに追加',
+            otpPlaceholder: '4-6桁の認証コードを入力',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'アップグレード版：無限の可能性',
             proDesc: '店舗別比較、長期トレンド、重要アラートまで一目で把握。',
@@ -585,8 +607,7 @@
             proThumb3: '税引前試算',
             proThumb4: 'パートナー用レポート',
             payLabelIdle: 'まずメール認証',
-            payLabelPending: '認証後に追加可能',
-            payLabelVerified: '⚡ 立即领取手机 APP 永久权限',
+            payLabelVerified: '⚡ 添加至手机 APP',
             installFallbackTitle: 'インストール案内',
             installFallbackBody:
               '⚡ 立即领取手机 APP 永久权限',
@@ -605,9 +626,9 @@
             basicThumb4: 'Auto summary',
             emailLabel: 'Enter your email to apply and start instantly.',
             emailBtn: 'Get verification code',
-            emailBtnPending: 'Complete email verification',
+            emailBtnPending: 'Code sent',
             emailBtnDone: 'Email verified',
-            pwaBtn: 'Add to Mobile APP',
+            otpPlaceholder: 'Enter 4-6 digit code',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'Pro: unlock unlimited potential',
             proDesc:
@@ -618,8 +639,7 @@
             proThumb3: 'Pre‑tax preview',
             proThumb4: 'Partner-ready reports',
             payLabelIdle: 'Verify Email First',
-            payLabelPending: 'Add after Verification',
-            payLabelVerified: '⚡ 立即领取手机 APP 永久权限',
+            payLabelVerified: '⚡ 添加至手机 APP',
             installFallbackTitle: 'Install Guide',
             installFallbackBody:
               '⚡ 立即领取手机 APP 永久权限',
@@ -670,18 +690,16 @@
           document.getElementById('pro-thumb-3').textContent = dict.proThumb3;
           document.getElementById('pro-thumb-4').textContent = dict.proThumb4;
           document.getElementById('pay-label').textContent =
-            verifyState === 'verified'
-              ? dict.payLabelVerified
-              : verifyState === 'pending'
-                ? dict.payLabelPending
-                : dict.payLabelIdle;
+            verifyState === 'verified' ? dict.payLabelVerified : dict.payLabelIdle;
+          document.getElementById('pay-icon').style.display =
+            verifyState === 'verified' ? 'inline-flex' : 'none';
           document.getElementById('cta-note').textContent = dict.ctaNote;
-          document.getElementById('a2hs-btn').textContent = dict.pwaBtn;
+          document.getElementById('otp-input').placeholder = dict.otpPlaceholder;
           document.getElementById('email-status').textContent =
             verifyState === 'verified'
               ? dict.emailBtnDone
               : verifyState === 'pending'
-                ? dict.payLabelPending
+                ? dict.emailBtnPending
                 : dict.payLabelIdle;
           document.getElementById('install-fallback-title').textContent = dict.installFallbackTitle;
           document.getElementById('install-fallback-body').textContent = dict.installFallbackBody;
@@ -710,11 +728,12 @@
 
         // PWA A2HS
         var deferredPrompt = null;
-        var a2hsBtn = document.getElementById('a2hs-btn');
         var emailInput = document.getElementById('email-input');
         var emailBtn = document.getElementById('email-btn');
+        var otpInput = document.getElementById('otp-input');
         var fallbackMask = document.getElementById('install-fallback-mask');
         var fallbackClose = document.getElementById('install-fallback-close');
+        var otpCode = '';
         function isIOSDevice() {
           var ua = navigator.userAgent || '';
           return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -754,6 +773,9 @@
         function isValidEmail(value) {
           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || '');
         }
+        function genOtpCode() {
+          return String(Math.floor(100000 + Math.random() * 900000));
+        }
         fallbackClose.addEventListener('click', closeFallback);
         fallbackMask.addEventListener('click', function (e) {
           if (e.target === fallbackMask) closeFallback();
@@ -761,11 +783,7 @@
         window.addEventListener('beforeinstallprompt', function (e) {
           e.preventDefault();
           deferredPrompt = e;
-          a2hsBtn.setAttribute('data-visible', 'true');
         });
-        if (isIOSDevice() && !window.matchMedia('(display-mode: standalone)').matches) {
-          a2hsBtn.setAttribute('data-visible', 'true');
-        }
         emailBtn.addEventListener('click', function () {
           var currentLang = page.getAttribute('data-lang') || 'zh';
           var val = emailInput.value.trim();
@@ -774,25 +792,24 @@
               shakeEmail();
               return;
             }
+            otpCode = genOtpCode();
             verifyState = 'pending';
+            otpInput.value = '';
+            otpInput.setAttribute('data-active', 'true');
             applyLang(currentLang);
             return;
-          }
-          if (verifyState === 'pending') {
-            verifyState = 'verified';
-            applyLang(currentLang);
           }
         });
-        a2hsBtn.addEventListener('click', function () {
-          if (!deferredPrompt) {
-            openFallback();
-            return;
+        otpInput.addEventListener('input', function () {
+          var currentLang = page.getAttribute('data-lang') || 'zh';
+          var digits = otpInput.value.replace(/[^\d]/g, '').slice(0, 6);
+          if (otpInput.value !== digits) otpInput.value = digits;
+          if (verifyState !== 'pending') return;
+          if (digits.length >= 4 && digits === otpCode) {
+            verifyState = 'verified';
+            otpInput.setAttribute('data-active', 'true');
+            applyLang(currentLang);
           }
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.finally(function () {
-            deferredPrompt = null;
-            a2hsBtn.setAttribute('data-visible', 'false');
-          });
         });
 
         // 金色主按鈕：直接觸發系統安裝彈窗
@@ -812,7 +829,6 @@
           deferredPrompt.prompt();
           deferredPrompt.userChoice.finally(function () {
             deferredPrompt = null;
-            a2hsBtn.setAttribute('data-visible', 'false');
           });
         });
 
