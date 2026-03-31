@@ -2,19 +2,19 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="manifest" href="/manifest.json?v=1.1.0" />
+    <link rel="manifest" href="/manifest.json?v=0331_Final_OTP" />
     <meta name="theme-color" content="#020617" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="闪记" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png?v=1.1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png?v=0331_Final_OTP" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&display=swap&v=1.1.0"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&display=swap&v=0331_Final_OTP"
       rel="stylesheet"
     />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1.1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=0331_Final_OTP" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
@@ -238,8 +238,14 @@
       .otp-wrap {
         margin-top: 4px;
       }
+      .otp-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
       .otp-input {
-        width: 100%;
+        flex: 1 1 170px;
+        min-width: 0;
         border-radius: 999px;
         border: 1px dashed rgba(148, 163, 184, 0.7);
         padding: 8px 12px;
@@ -260,6 +266,19 @@
         box-shadow:
           0 0 0 1px rgba(250, 204, 21, 0.35),
           0 0 16px rgba(250, 204, 21, 0.26);
+      }
+      .otp-confirm-btn {
+        flex: 0 0 auto;
+        min-width: max-content;
+        border: none;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: clamp(10px, 2.8vw, 11px);
+        font-weight: 700;
+        background: linear-gradient(120deg, #facc15, #f97316);
+        color: #111827;
+        cursor: pointer;
+        white-space: nowrap;
       }
       .install-fallback-mask {
         position: fixed;
@@ -367,6 +386,19 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+      }
+      .cta-shell.cta-disabled::before {
+        animation: none;
+        opacity: 0;
+      }
+      .cta-btn:disabled {
+        background: linear-gradient(120deg, rgba(100, 116, 139, 0.85), rgba(71, 85, 105, 0.88));
+        color: rgba(241, 245, 249, 0.86);
+        box-shadow:
+          0 8px 18px rgba(0, 0, 0, 0.65),
+          inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        cursor: not-allowed;
+        animation: none;
       }
       .cta-note {
         margin-top: 6px;
@@ -477,15 +509,18 @@
           </div>
           <div class="email-status" id="email-status"></div>
           <div class="otp-wrap">
-            <input
-              id="otp-input"
-              class="otp-input"
-              type="text"
-              inputmode="numeric"
-              maxlength="6"
-              placeholder="请输入4-6位验证码"
-              data-active="false"
-            />
+            <div class="otp-row">
+              <input
+                id="otp-input"
+                class="otp-input"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="请输入4-6位验证码"
+                data-active="false"
+              />
+              <button id="otp-confirm-btn" class="otp-confirm-btn" type="button">确定验证</button>
+            </div>
           </div>
         </section>
 
@@ -502,7 +537,7 @@
             <div class="thumb"><span id="pro-thumb-3"></span></div>
             <div class="thumb"><span id="pro-thumb-4"></span></div>
           </div>
-          <div class="cta-shell">
+          <div id="cta-shell" class="cta-shell cta-disabled">
             <button id="pay-btn" class="cta-btn" type="button">
               <span id="pay-icon" class="icon" style="display:none">⚡</span>
               <span id="pay-label"></span>
@@ -536,6 +571,7 @@
             emailBtn: '获取验证码',
             emailBtnPending: '验证码已发送',
             emailBtnDone: '邮箱已验证',
+            otpConfirmBtn: '确定验证',
             otpPlaceholder: '请输入4-6位验证码',
             proKicker: 'PRO · UPGRADE',
             proTitle: '升级版：解锁无限可能',
@@ -567,6 +603,7 @@
             emailBtn: '인증 코드 받기',
             emailBtnPending: '인증번호 전송됨',
             emailBtnDone: '이메일 인증됨',
+            otpConfirmBtn: '인증 확인',
             otpPlaceholder: '4-6자리 인증번호 입력',
             proKicker: 'PRO · UPGRADE',
             proTitle: '업그레이드: 무한한 가능성',
@@ -597,6 +634,7 @@
             emailBtn: '認証コードを受け取る',
             emailBtnPending: '認証コード送信済み',
             emailBtnDone: 'メール認証済み',
+            otpConfirmBtn: '認証を確定',
             otpPlaceholder: '4-6桁の認証コードを入力',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'アップグレード版：無限の可能性',
@@ -628,6 +666,7 @@
             emailBtn: 'Get verification code',
             emailBtnPending: 'Code sent',
             emailBtnDone: 'Email verified',
+            otpConfirmBtn: 'Confirm verification',
             otpPlaceholder: 'Enter 4-6 digit code',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'Pro: unlock unlimited potential',
@@ -693,8 +732,13 @@
             verifyState === 'verified' ? dict.payLabelVerified : dict.payLabelIdle;
           document.getElementById('pay-icon').style.display =
             verifyState === 'verified' ? 'inline-flex' : 'none';
+          document.getElementById('pay-btn').disabled = verifyState !== 'verified';
+          document
+            .getElementById('cta-shell')
+            .classList.toggle('cta-disabled', verifyState !== 'verified');
           document.getElementById('cta-note').textContent = dict.ctaNote;
           document.getElementById('otp-input').placeholder = dict.otpPlaceholder;
+          document.getElementById('otp-confirm-btn').textContent = dict.otpConfirmBtn;
           document.getElementById('email-status').textContent =
             verifyState === 'verified'
               ? dict.emailBtnDone
@@ -733,6 +777,7 @@
         var otpInput = document.getElementById('otp-input');
         var fallbackMask = document.getElementById('install-fallback-mask');
         var fallbackClose = document.getElementById('install-fallback-close');
+        var otpConfirmBtn = document.getElementById('otp-confirm-btn');
         var otpCode = '';
         function isIOSDevice() {
           var ua = navigator.userAgent || '';
@@ -784,7 +829,7 @@
           e.preventDefault();
           deferredPrompt = e;
         });
-        emailBtn.addEventListener('click', function () {
+        emailBtn.addEventListener('click', async function () {
           var currentLang = page.getAttribute('data-lang') || 'zh';
           var val = emailInput.value.trim();
           if (verifyState === 'idle') {
@@ -792,23 +837,63 @@
               shakeEmail();
               return;
             }
-            otpCode = genOtpCode();
-            verifyState = 'pending';
-            otpInput.value = '';
-            otpInput.setAttribute('data-active', 'true');
-            applyLang(currentLang);
+            emailBtn.disabled = true;
+            try {
+              var res = await fetch('/api/verify/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: val }),
+              });
+              var data = await res.json().catch(function () {
+                return {};
+              });
+              if (!res.ok || !data.ok) {
+                otpCode = '';
+                openFallback();
+                return;
+              }
+              otpCode = genOtpCode();
+              verifyState = 'pending';
+              otpInput.value = '';
+              otpInput.setAttribute('data-active', 'true');
+              applyLang(currentLang);
+            } finally {
+              emailBtn.disabled = false;
+            }
             return;
           }
         });
         otpInput.addEventListener('input', function () {
-          var currentLang = page.getAttribute('data-lang') || 'zh';
           var digits = otpInput.value.replace(/[^\d]/g, '').slice(0, 6);
           if (otpInput.value !== digits) otpInput.value = digits;
+        });
+        otpConfirmBtn.addEventListener('click', async function () {
+          var currentLang = page.getAttribute('data-lang') || 'zh';
+          var code = otpInput.value.trim();
           if (verifyState !== 'pending') return;
-          if (digits.length >= 4 && digits === otpCode) {
-            verifyState = 'verified';
-            otpInput.setAttribute('data-active', 'true');
-            applyLang(currentLang);
+          if (code.length < 4) {
+            shakeEmail();
+            return;
+          }
+          otpConfirmBtn.disabled = true;
+          try {
+            var res = await fetch('/api/verify/check', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: emailInput.value.trim(), code: code }),
+            });
+            var data = await res.json().catch(function () {
+              return {};
+            });
+            if (res.ok && data.ok) {
+              verifyState = 'verified';
+              otpInput.setAttribute('data-active', 'true');
+              applyLang(currentLang);
+            } else {
+              shakeEmail();
+            }
+          } finally {
+            otpConfirmBtn.disabled = false;
           }
         });
 
@@ -833,12 +918,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/service-worker.js?v=1.1.0').catch(function () {});
+          navigator.serviceWorker.register('/service-worker.js?v=0331_Final_OTP').catch(function () {});
           window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/service-worker.js?v=1.1.0').catch(function () {});
+            navigator.serviceWorker.register('/service-worker.js?v=0331_Final_OTP').catch(function () {});
           });
           window.setTimeout(function () {
-            navigator.serviceWorker.register('/service-worker.js?v=1.1.0').catch(function () {});
+            navigator.serviceWorker.register('/service-worker.js?v=0331_Final_OTP').catch(function () {});
           }, 10000);
         }
       })();

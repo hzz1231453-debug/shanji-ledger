@@ -36,6 +36,8 @@ const readQuota = () => {
   }
 };
 const writeQuota = (data) => fs.writeFileSync(QUOTA_DB_PATH, JSON.stringify(data, null, 2));
+const OTP_TTL_MS = 5 * 60 * 1000;
+const otpStore = new Map();
 
 // --- 郵件發送（Gmail App Password，走環境變數） ---
 const MAIL_USER = process.env.MAIL_USER || '';
@@ -93,6 +95,44 @@ app.post('/api/notify', async (req, res) => {
     console.error('[MAIL_ERROR]', err);
     res.status(500).json({ ok: false, error: 'MAIL_SEND_FAILED' });
   }
+});
+
+app.post('/api/verify/send', async (req, res) => {
+  const email = String(req.body?.email || '').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ ok: false, error: 'INVALID_EMAIL' });
+  }
+  if (!mailer) {
+    return res.status(500).json({ ok: false, error: 'MAIL_NOT_CONFIGURED' });
+  }
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  otpStore.set(email, { code, expireAt: Date.now() + OTP_TTL_MS });
+  try {
+    await mailer.sendMail({
+      from: MAIL_USER,
+      to: email,
+      subject: 'Shanji verification code',
+      text: `Your verification code is: ${code}. It expires in 5 minutes.`,
+    });
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('[VERIFY_SEND_ERROR]', err);
+    return res.status(500).json({ ok: false, error: 'MAIL_SEND_FAILED' });
+  }
+});
+
+app.post('/api/verify/check', (req, res) => {
+  const email = String(req.body?.email || '').trim().toLowerCase();
+  const code = String(req.body?.code || '').trim();
+  const entry = otpStore.get(email);
+  if (!entry) return res.status(400).json({ ok: false, error: 'CODE_NOT_FOUND' });
+  if (Date.now() > entry.expireAt) {
+    otpStore.delete(email);
+    return res.status(400).json({ ok: false, error: 'CODE_EXPIRED' });
+  }
+  if (entry.code !== code) return res.status(400).json({ ok: false, error: 'CODE_INVALID' });
+  otpStore.delete(email);
+  return res.json({ ok: true, verified: true });
 });
 
 app.get('/health', (req, res) => res.json({ status: 'OK', service: 'shanji-ledger' }));
