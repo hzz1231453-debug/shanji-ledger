@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="manifest" href="/manifest.json?v=0331_Final_OTP" />
+    <meta name="theme-color" content="#020617" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="闪记" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png?v=0331_Final_OTP" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&display=swap&v=0331_Final_OTP"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=0331_Final_OTP" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>闪记账本</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'Noto Sans KR',
+          'Noto Sans JP', sans-serif;
+        background: radial-gradient(circle at top, #0b1120 0, #020617 40%, #000 100%);
+        color: #e5e7eb;
+      }
+      .page {
+        min-height: 100vh;
+        padding: 20px 16px 30px;
+        display: flex;
+        justify-content: center;
+      }
+      .shell {
+        width: 100%;
+        max-width: 440px;
+        background: rgba(15, 23, 42, 0.96);
+        border-radius: 26px;
+        padding: 18px 16px 20px;
+        box-shadow:
+          0 24px 70px rgba(0, 0, 0, 0.85),
+          0 0 0 1px rgba(148, 163, 184, 0.3);
+        border: 1px solid rgba(251, 191, 36, 0.4);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .logo-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+      }
+      .logo-halo {
+        width: 78px;
+        height: 78px;
+        border-radius: 999px;
+        background:
+          radial-gradient(circle at 30% 0%, rgba(250, 204, 21, 0.2), transparent 55%),
+          radial-gradient(circle at 50% 50%, rgba(250, 204, 21, 0.6), transparent 70%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          0 0 24px rgba(250, 204, 21, 0.75),
+          0 0 0 1px rgba(15, 23, 42, 0.95);
+        animation: halo-breath 3s ease-in-out infinite;
+      }
+      .logo-halo-inner {
+        width: 74%;
+        height: 74%;
+        border-radius: inherit;
+        background: radial-gradient(circle at 30% 0%, #020617 0, #020617 45%, #000 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .logo-halo-inner img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      .lang-switch {
+        display: flex;
+        gap: 6px;
+        padding: 4px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.7);
+      }
+      .lang-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 4px 9px;
+        font-size: 11px;
+        cursor: pointer;
+        background: transparent;
+        color: rgba(156, 163, 175, 0.9);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .lang-btn[data-active='true'] {
+        background: linear-gradient(120deg, #facc15, #f97316);
+        color: #020617;
+        font-weight: 700;
+      }
+      .section {
+        background: radial-gradient(circle at top, rgba(30, 64, 175, 0.22), rgba(15, 23, 42, 0.98));
+        border-radius: 18px;
+        padding: 11px 11px 13px;
+        border: 1px solid rgba(30, 64, 175, 0.6);
+      }
+      .section.upgrade {
+        background: radial-gradient(circle at top, rgba(250, 204, 21, 0.16), rgba(15, 23, 42, 0.98));
+        border-color: rgba(250, 204, 21, 0.75);
+      }
+      .section-header {
+        margin-bottom: 8px;
+      }
+      .section-kicker {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(148, 163, 184, 0.9);
+      }
+      .section-title {
+        font-size: 15px;
+        font-weight: 800;
+        margin-top: 4px;
+        color: #f9fafb;
+      }
+      .section-desc {
+        font-size: 11px;
+        color: rgba(209, 213, 219, 0.9);
+        margin-top: 2px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 10px;
+        background: rgba(22, 163, 74, 0.2);
+        color: rgba(74, 222, 128, 0.92);
+        border: 1px solid rgba(34, 197, 94, 0.7);
+        margin-top: 6px;
+      }
+      .pill-unlimited {
+        background: rgba(234, 179, 8, 0.16);
+        color: rgba(250, 204, 21, 0.96);
+        border-color: rgba(250, 204, 21, 0.85);
+      }
+      .thumb-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 9px;
+      }
+      .thumb {
+        border-radius: 11px;
+        background: radial-gradient(circle at top left, #111827, #020617);
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: rgba(209, 213, 219, 0.92);
+        text-align: center;
+        padding: 4px;
+      }
+      .thumb span {
+        display: block;
+      }
+      .email-box {
+        background: radial-gradient(circle at top, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.98));
+        border-radius: 18px;
+        padding: 12px 12px 13px;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .email-label {
+        font-size: 11px;
+        color: rgba(209, 213, 219, 0.9);
+      }
+      .email-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .email-row input {
+        flex: 1 1 200px;
+        min-width: 0;
+        border-radius: 999px;
+        border: 1px solid rgba(75, 85, 99, 0.9);
+        padding: 9px 11px;
+        font-size: 12px;
+        background: rgba(15, 23, 42, 0.9);
+        color: #e5e7eb;
+      }
+      .email-row input::placeholder {
+        color: rgba(148, 163, 184, 0.9);
+      }
+      .email-btn {
+        flex: 0 0 auto;
+        min-width: max-content;
+        border-radius: 999px;
+        border: none;
+        padding: 9px 12px;
+        font-size: clamp(10px, 2.8vw, 11px);
+        font-weight: 700;
+        background: linear-gradient(120deg, #22c55e, #16a34a);
+        color: #ecfdf5;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .email-status {
+        min-height: 14px;
+        font-size: 10px;
+        color: rgba(148, 163, 184, 0.95);
+      }
+      .otp-wrap {
+        margin-top: 4px;
+      }
+      .otp-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .otp-input {
+        flex: 1 1 170px;
+        min-width: 0;
+        border-radius: 999px;
+        border: 1px dashed rgba(148, 163, 184, 0.7);
+        padding: 8px 12px;
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        text-align: center;
+        background: rgba(15, 23, 42, 0.9);
+        color: rgba(209, 213, 219, 0.9);
+        transition: all 180ms ease;
+      }
+      .otp-input::placeholder {
+        letter-spacing: 0;
+        color: rgba(148, 163, 184, 0.9);
+      }
+      .otp-input[data-active='true'] {
+        border-style: solid;
+        border-color: rgba(250, 204, 21, 0.82);
+        box-shadow:
+          0 0 0 1px rgba(250, 204, 21, 0.35),
+          0 0 16px rgba(250, 204, 21, 0.26);
+      }
+      .otp-confirm-btn {
+        flex: 0 0 auto;
+        min-width: max-content;
+        border: none;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: clamp(10px, 2.8vw, 11px);
+        font-weight: 700;
+        background: linear-gradient(120deg, #facc15, #f97316);
+        color: #111827;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .install-fallback-mask {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 18px;
+      }
+      .install-fallback-mask[data-open='true'] {
+        display: flex;
+      }
+      .install-fallback-card {
+        width: min(100%, 420px);
+        border-radius: 18px;
+        border: 1px solid rgba(250, 204, 21, 0.75);
+        background: radial-gradient(circle at top, rgba(24, 24, 27, 0.96), rgba(15, 23, 42, 0.98));
+        color: #f8fafc;
+        padding: 14px 14px 12px;
+        box-shadow:
+          0 0 0 1px rgba(15, 23, 42, 0.9),
+          0 20px 42px rgba(0, 0, 0, 0.85);
+        animation: install-fallback-breath 2.6s ease-in-out infinite;
+      }
+      .install-fallback-title {
+        font-size: 12px;
+        font-weight: 800;
+        color: #facc15;
+        margin-bottom: 6px;
+        text-align: center;
+      }
+      .install-fallback-body {
+        font-size: 11px;
+        line-height: 1.6;
+        color: rgba(241, 245, 249, 0.92);
+        text-align: left;
+        white-space: pre-line;
+      }
+      .install-fallback-qr {
+        display: none;
+        width: 168px;
+        height: 168px;
+        margin: 8px auto 0;
+        border-radius: 10px;
+        border: 1px solid rgba(250, 204, 21, 0.5);
+        background: #fff;
+        object-fit: contain;
+      }
+      .install-fallback-qr[data-show='true'] {
+        display: block;
+      }
+      .install-fallback-close {
+        margin-top: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 999px;
+        padding: 8px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        background: linear-gradient(120deg, #facc15, #f97316);
+        color: #111827;
+        cursor: pointer;
+      }
+      .cta-shell {
+        margin-top: 4px;
+        border-radius: 999px;
+        padding: 2px;
+        background: radial-gradient(circle at 0 0, #facc15, rgba(249, 115, 22, 0.7));
+        box-shadow:
+          0 0 0 1px rgba(15, 23, 42, 0.95),
+          0 0 40px rgba(250, 204, 21, 0.75);
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-shell::before {
+        content: '';
+        position: absolute;
+        inset: -40%;
+        background: conic-gradient(
+          from 0deg,
+          rgba(250, 250, 250, 0.12),
+          rgba(250, 204, 21, 0.7),
+          transparent 55%,
+          transparent 100%
+        );
+        animation: orbit 5s linear infinite;
+        opacity: 0.8;
+      }
+      .cta-btn {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        border-radius: inherit;
+        border: none;
+        padding: 13px 16px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: radial-gradient(circle at 30% 0%, #facc15 0, #f97316 45%, #92400e 100%);
+        color: #020617;
+        cursor: pointer;
+        box-shadow:
+          0 12px 25px rgba(0, 0, 0, 0.75),
+          inset 0 1px 0 rgba(255, 248, 220, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        line-height: 1;
+        animation: breath 2.4s ease-in-out infinite;
+      }
+      .cta-btn span.icon {
+        width: 1em;
+        height: 1em;
+        font-size: 16px;
+        transform: translateY(0);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      #pay-label {
+        display: inline-flex;
+        align-items: center;
+        line-height: 1;
+      }
+      .cta-shell.cta-disabled::before {
+        animation: none;
+        opacity: 0;
+      }
+      .cta-btn:disabled {
+        background: linear-gradient(120deg, rgba(100, 116, 139, 0.85), rgba(71, 85, 105, 0.88));
+        color: rgba(241, 245, 249, 0.86);
+        box-shadow:
+          0 8px 18px rgba(0, 0, 0, 0.65),
+          inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        cursor: not-allowed;
+        animation: none;
+      }
+      .cta-note {
+        margin-top: 6px;
+        font-size: 9px;
+        color: rgba(148, 163, 184, 0.9);
+        text-align: center;
+      }
+      @keyframes breath {
+        0%,
+        100% {
+          transform: translateY(0);
+          box-shadow:
+            0 12px 25px rgba(0, 0, 0, 0.75),
+            inset 0 1px 0 rgba(255, 248, 220, 0.85);
+        }
+        50% {
+          transform: translateY(1px) scale(0.99);
+          box-shadow:
+            0 18px 40px rgba(250, 204, 21, 0.8),
+            inset 0 1px 0 rgba(255, 253, 231, 0.96);
+        }
+      }
+      @keyframes orbit {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes halo-breath {
+        0%,
+        100% {
+          box-shadow:
+            0 0 22px rgba(250, 204, 21, 0.5),
+            0 0 0 1px rgba(15, 23, 42, 0.95);
+        }
+        50% {
+          box-shadow:
+            0 0 34px rgba(250, 204, 21, 0.95),
+            0 0 0 1px rgba(15, 23, 42, 0.9);
+        }
+      }
+      @keyframes install-fallback-breath {
+        0%,
+        100% {
+          transform: translateY(0);
+          box-shadow:
+            0 0 0 1px rgba(250, 204, 21, 0.72),
+            0 16px 30px rgba(0, 0, 0, 0.86);
+        }
+        50% {
+          transform: translateY(-1px);
+          box-shadow:
+            0 0 0 1px rgba(250, 204, 21, 0.95),
+            0 20px 38px rgba(250, 204, 21, 0.32);
+        }
+      }
+      @media (min-width: 640px) {
+        .shell {
+          padding: 20px 22px 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page" data-lang="zh">
+      <div class="shell">
+        <div class="logo-row">
+          <div class="logo-halo">
+            <div class="logo-halo-inner">
+              <img src="/logo.png" alt="Flash Ledger logo" />
+            </div>
+          </div>
+          <div class="lang-switch" aria-label="Language switcher">
+            <button class="lang-btn" data-lang-code="zh" data-active="true">中</button>
+            <button class="lang-btn" data-lang-code="ko">한</button>
+            <button class="lang-btn" data-lang-code="jp">日</button>
+            <button class="lang-btn" data-lang-code="en">EN</button>
+          </div>
+        </div>
+
+        <section class="section" id="basic-section">
+          <div class="section-header">
+            <div class="section-kicker" id="basic-kicker"></div>
+            <div class="section-title" id="basic-title"></div>
+            <div class="section-desc" id="basic-desc"></div>
+            <div class="pill" id="basic-pill"></div>
+          </div>
+          <div class="thumb-row" aria-hidden="true">
+            <div class="thumb"><span id="basic-thumb-1"></span></div>
+            <div class="thumb"><span id="basic-thumb-2"></span></div>
+            <div class="thumb"><span id="basic-thumb-3"></span></div>
+            <div class="thumb"><span id="basic-thumb-4"></span></div>
+          </div>
+        </section>
+
+        <section class="email-box" id="email-box">
+          <div class="email-label" id="email-label"></div>
+          <div class="email-row">
+            <input
+              id="email-input"
+              type="email"
+              autocomplete="email"
+              placeholder="name@example.com"
+            />
+            <button class="email-btn" type="button" id="email-btn"></button>
+          </div>
+          <div class="email-status" id="email-status"></div>
+          <div class="otp-wrap">
+            <div class="otp-row">
+              <input
+                id="otp-input"
+                class="otp-input"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="请输入4-6位验证码"
+                data-active="false"
+              />
+              <button id="otp-confirm-btn" class="otp-confirm-btn" type="button">确定验证</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section upgrade" id="pro-section">
+          <div class="section-header">
+            <div class="section-kicker" id="pro-kicker"></div>
+            <div class="section-title" id="pro-title"></div>
+            <div class="section-desc" id="pro-desc"></div>
+            <div class="pill pill-unlimited" id="pro-pill"></div>
+          </div>
+          <div class="thumb-row" aria-hidden="true">
+            <div class="thumb"><span id="pro-thumb-1"></span></div>
+            <div class="thumb"><span id="pro-thumb-2"></span></div>
+            <div class="thumb"><span id="pro-thumb-3"></span></div>
+            <div class="thumb"><span id="pro-thumb-4"></span></div>
+          </div>
+          <div id="cta-shell" class="cta-shell cta-disabled">
+            <button id="pay-btn" class="cta-btn" type="button">
+              <span id="pay-icon" class="icon">⚡</span>
+              <span id="pay-label"></span>
+              <span id="pay-version" style="font-size:10px;opacity:.78;letter-spacing:.02em;">v1.1-Resend</span>
+            </button>
+          </div>
+          <div class="cta-note" id="cta-note"></div>
+        </section>
+      </div>
+    </div>
+    <div class="install-fallback-mask" id="install-fallback-mask" data-open="false" role="dialog" aria-modal="true">
+      <div class="install-fallback-card">
+        <div class="install-fallback-title" id="install-fallback-title"></div>
+        <div class="install-fallback-body" id="install-fallback-body"></div>
+        <img id="install-fallback-qr" class="install-fallback-qr" alt="install qr code" />
+        <button type="button" class="install-fallback-close" id="install-fallback-close"></button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var strings = {
+          zh: {
+            basicKicker: '基础版 · PRODUCT',
+            basicTitle: '基础版：记账翻译，一秒搞定',
+            basicDesc: '拍照识别 + 四语翻译 + 智能分类，小店现金流全在一张屏里。',
+            basicPill: '含免费额度',
+            basicThumb1: '拍照记账',
+            basicThumb2: '语音记账',
+            basicThumb3: '多语言票据',
+            basicThumb4: '自动汇总',
+            emailLabel: '输入邮箱申请，即刻开始。',
+            emailBtn: '获取验证码',
+            emailBtnPending: '验证码已发送',
+            emailBtnDone: '邮箱已验证',
+            emailBtnRetrySuffix: '后重试',
+            otpConfirmBtn: '确定验证',
+            otpPlaceholder: '请输入4-6位验证码',
+            proKicker: 'PRO · UPGRADE',
+            proTitle: '升级版：解锁无限可能',
+            proDesc: '跨门店对比、长期趋势、重点预警，一眼看懂利润密码。',
+            proPill: '无限额度',
+            proThumb1: '盈利趋势',
+            proThumb2: '多店对比',
+            proThumb3: '税前预估',
+            proThumb4: '合伙人报告',
+            payLabelIdle: '添加至手机 APP',
+            payLabelVerified: '添加至手机 APP',
+            payLabelDesktop: '扫码安装',
+            statusTitle: '验证码状态',
+            sendSuccess: '验证码已发出，请检查邮箱',
+            sendFailed: '发信失败，请检查配置',
+            installGuideTitle: '安装指引',
+            installGuideIOS:
+              'iPhone 安装步骤：\n1) 点击 Safari 底部“分享”按钮\n2) 选择“添加到主屏幕”\n3) 回到桌面打开「闪记」',
+            installGuideAndroid:
+              'Android 安装步骤：\n1) 点击浏览器菜单\n2) 选择“安装应用”或“添加到主屏幕”\n3) 完成后从桌面打开「闪记」',
+            desktopInstallGuide:
+              '当前为电脑端。\n请用手机扫码打开此页面，再点“添加到主屏幕”完成安装。',
+            installFallbackClose: '知道了',
+            ctaNote: '一次买断，后续升级与修复全部免费推送。',
+          },
+          ko: {
+            basicKicker: '기본판 · PRODUCT',
+            basicTitle: '기본판: 장부 · 번역, 1초 정리',
+            basicDesc:
+              '영수증 사진 + 4개 언어 번역 + 자동 분류, 작은 가게 현금 흐름을 한 눈에.',
+            basicPill: '무료 한도 포함',
+            basicThumb1: '사진으로 입력',
+            basicThumb2: '음성으로 입력',
+            basicThumb3: '다국어 영수증',
+            basicThumb4: '자동 집계',
+            emailLabel: '이메일을 입력하면 바로 시작할 수 있습니다.',
+            emailBtn: '인증 코드 받기',
+            emailBtnPending: '인증번호 전송됨',
+            emailBtnDone: '이메일 인증됨',
+            emailBtnRetrySuffix: '후 재시도',
+            otpConfirmBtn: '인증 확인',
+            otpPlaceholder: '4-6자리 인증번호 입력',
+            proKicker: 'PRO · UPGRADE',
+            proTitle: '업그레이드: 무한한 가능성',
+            proDesc: '매장별 비교, 장기 추세, 중요 알림까지 한 번에 확인.',
+            proPill: '무제한 한도',
+            proThumb1: '이익 추세',
+            proThumb2: '매장별 비교',
+            proThumb3: '세전 추정',
+            proThumb4: '파트너 리포트',
+            payLabelIdle: '휴대폰 앱에 추가',
+            payLabelVerified: '휴대폰 앱에 추가',
+            payLabelDesktop: 'QR로 설치',
+            statusTitle: '인증번호 상태',
+            sendSuccess: '인증번호가 발송되었습니다. 이메일을 확인하세요.',
+            sendFailed: '발송 실패. 설정을 확인하세요.',
+            installGuideTitle: '설치 안내',
+            installGuideIOS:
+              'iPhone 설치 방법:\n1) Safari 하단의 공유 버튼 탭\n2) “홈 화면에 추가” 선택\n3) 홈 화면에서 「번개장부」 실행',
+            installGuideAndroid:
+              'Android 설치 방법:\n1) 브라우저 메뉴 탭\n2) “앱 설치” 또는 “홈 화면에 추가” 선택\n3) 홈 화면에서 「번개장부」 실행',
+            desktopInstallGuide:
+              '현재 PC 화면입니다.\n휴대폰으로 QR을 스캔해 같은 페이지를 연 뒤, 홈 화면에 추가하세요.',
+            installFallbackClose: '확인',
+            ctaNote: '일시불 결제, 이후 기능 업데이트와 패치는 모두 무료입니다.',
+          },
+          jp: {
+            basicKicker: 'ベーシック版 · PRODUCT',
+            basicTitle: '基本版：記帳と翻訳を一瞬で',
+            basicDesc: 'レシート撮影 + 4言語翻訳 + 自動分類で、小さな店舗の現金動きを一画面に。',
+            basicPill: '無料枠込み',
+            basicThumb1: '写真で入力',
+            basicThumb2: '音声で入力',
+            basicThumb3: '多言語レシート',
+            basicThumb4: '自動サマリ',
+            emailLabel: 'メールアドレスを入力して、今すぐ始めましょう。',
+            emailBtn: '認証コードを受け取る',
+            emailBtnPending: '認証コード送信済み',
+            emailBtnDone: 'メール認証済み',
+            emailBtnRetrySuffix: '秒後に再試行',
+            otpConfirmBtn: '認証を確定',
+            otpPlaceholder: '4-6桁の認証コードを入力',
+            proKicker: 'PRO · UPGRADE',
+            proTitle: 'アップグレード版：無限の可能性',
+            proDesc: '店舗別比較、長期トレンド、重要アラートまで一目で把握。',
+            proPill: '無制限枠',
+            proThumb1: '利益トレンド',
+            proThumb2: '店舗別比較',
+            proThumb3: '税引前試算',
+            proThumb4: 'パートナー用レポート',
+            payLabelIdle: 'スマホアプリに追加',
+            payLabelVerified: 'スマホアプリに追加',
+            payLabelDesktop: 'QRでインストール',
+            statusTitle: '認証コードの状態',
+            sendSuccess: '認証コードを送信しました。メールを確認してください。',
+            sendFailed: '送信に失敗しました。設定を確認してください。',
+            installGuideTitle: 'インストール案内',
+            installGuideIOS:
+              'iPhone インストール手順:\n1) Safari 下部の共有ボタンをタップ\n2) 「ホーム画面に追加」を選択\n3) ホーム画面から「閃記」を起動',
+            installGuideAndroid:
+              'Android インストール手順:\n1) ブラウザメニューを開く\n2) 「アプリをインストール」または「ホーム画面に追加」を選択\n3) ホーム画面から「閃記」を起動',
+            desktopInstallGuide:
+              '現在はPC画面です。\nスマホでQRを読み取り、このページを開いてホーム画面に追加してください。',
+            installFallbackClose: 'OK',
+            ctaNote: '一度の買い切りで、その後のアップデートと修正はすべて無料です。',
+          },
+          en: {
+            basicKicker: 'BASIC · PRODUCT',
+            basicTitle: 'Basic: bookkeeping & translation in a second',
+            basicDesc:
+              'Receipt photos, 4-language translation, and smart tagging – one panel for all cashflow.',
+            basicPill: 'Free Tier Included',
+            basicThumb1: 'Photo capture',
+            basicThumb2: 'Voice capture',
+            basicThumb3: 'Multilingual bills',
+            basicThumb4: 'Auto summary',
+            emailLabel: 'Enter your email to apply and start instantly.',
+            emailBtn: 'Get verification code',
+            emailBtnPending: 'Code sent',
+            emailBtnDone: 'Email verified',
+            emailBtnRetrySuffix: 's retry',
+            otpConfirmBtn: 'Confirm verification',
+            otpPlaceholder: 'Enter 4-6 digit code',
+            proKicker: 'PRO · UPGRADE',
+            proTitle: 'Pro: unlock unlimited potential',
+            proDesc:
+              'Multi-store comparisons, long-term trends, and critical alerts in one view.',
+            proPill: 'Unlimited Access',
+            proThumb1: 'Profit trends',
+            proThumb2: 'Store comparisons',
+            proThumb3: 'Pre‑tax preview',
+            proThumb4: 'Partner-ready reports',
+            payLabelIdle: 'Add to Phone App',
+            payLabelVerified: 'Add to Phone App',
+            payLabelDesktop: 'Install via QR',
+            statusTitle: 'OTP Status',
+            sendSuccess: 'Verification code sent. Please check your email.',
+            sendFailed: 'Send failed. Please check configuration.',
+            installGuideTitle: 'Install Guide',
+            installGuideIOS:
+              'iPhone steps:\n1) Tap the Share button in Safari\n2) Choose “Add to Home Screen”\n3) Open “Flash Ledger” from your home screen',
+            installGuideAndroid:
+              'Android steps:\n1) Open browser menu\n2) Tap “Install app” or “Add to Home screen”\n3) Open “Flash Ledger” from your home screen',
+            desktopInstallGuide:
+              'You are on desktop.\nScan the QR code with your phone, open this page, then add it to home screen.',
+            installFallbackClose: 'Got it',
+            ctaNote: 'One-time payment. All future upgrades and fixes are pushed for free.',
+          },
+        };
+
+        var langButtons = document.querySelectorAll('.lang-btn');
+        var page = document.querySelector('.page');
+        var verifyState = 'idle'; // idle -> pending -> verified
+        var VERIFY_CACHE_KEY = 'flash_verify_state_v1';
+        var VERIFIED_EMAIL_KEY = 'flash_verified_email_v1';
+        var resendLeftSec = 0;
+        var resendTimer = null;
+
+        function applyLang(lang) {
+          var dict = strings[lang] || strings.zh;
+          page.setAttribute('data-lang', lang);
+          try {
+            localStorage.setItem('app_lang', lang);
+          } catch (e) {}
+          document.title =
+            lang === 'ko'
+              ? '번개장부 · Flash Ledger'
+              : lang === 'jp'
+                ? '閃記帳簿 · Flash Ledger'
+                : lang === 'en'
+                  ? 'Flash Ledger'
+                  : '闪记账本';
+          document.getElementById('basic-kicker').textContent = dict.basicKicker;
+          document.getElementById('basic-title').textContent = dict.basicTitle;
+          document.getElementById('basic-desc').textContent = dict.basicDesc;
+          document.getElementById('basic-pill').textContent = dict.basicPill;
+          document.getElementById('basic-thumb-1').textContent = dict.basicThumb1;
+          document.getElementById('basic-thumb-2').textContent = dict.basicThumb2;
+          document.getElementById('basic-thumb-3').textContent = dict.basicThumb3;
+          document.getElementById('basic-thumb-4').textContent = dict.basicThumb4;
+          document.getElementById('email-label').textContent = dict.emailLabel;
+          var emailBtnText =
+            verifyState === 'verified'
+              ? dict.emailBtnDone
+              : verifyState === 'pending'
+                ? resendLeftSec > 0
+                  ? String(resendLeftSec) + 's ' + dict.emailBtnRetrySuffix
+                  : dict.emailBtnPending
+                : dict.emailBtn;
+          document.getElementById('email-btn').textContent = emailBtnText;
+          document.getElementById('pro-kicker').textContent = dict.proKicker;
+          document.getElementById('pro-title').textContent = dict.proTitle;
+          document.getElementById('pro-desc').textContent = dict.proDesc;
+          document.getElementById('pro-pill').textContent = dict.proPill;
+          document.getElementById('pro-thumb-1').textContent = dict.proThumb1;
+          document.getElementById('pro-thumb-2').textContent = dict.proThumb2;
+          document.getElementById('pro-thumb-3').textContent = dict.proThumb3;
+          document.getElementById('pro-thumb-4').textContent = dict.proThumb4;
+          var desktopMode = !isMobileDevice();
+          document.getElementById('pay-label').textContent = desktopMode
+            ? dict.payLabelDesktop
+            : dict.payLabelVerified;
+          document.getElementById('pay-icon').style.display = 'inline-flex';
+          document.getElementById('pay-btn').disabled = false;
+          document
+            .getElementById('cta-shell')
+            .classList.toggle('cta-disabled', false);
+          document.getElementById('cta-note').textContent = dict.ctaNote;
+          document.getElementById('otp-input').placeholder = dict.otpPlaceholder;
+          document.getElementById('otp-confirm-btn').textContent = dict.otpConfirmBtn;
+          document.getElementById('email-status').textContent =
+            verifyState === 'verified'
+              ? dict.emailBtnDone
+              : verifyState === 'pending'
+                ? dict.emailBtnPending
+                : dict.payLabelIdle;
+          document.getElementById('install-fallback-title').textContent = dict.statusTitle;
+          document.getElementById('install-fallback-body').textContent = '';
+          var fallbackQr = document.getElementById('install-fallback-qr');
+          fallbackQr.setAttribute('data-show', 'false');
+          fallbackQr.removeAttribute('src');
+          document.getElementById('install-fallback-close').textContent = dict.installFallbackClose;
+        }
+
+        langButtons.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var lang = btn.getAttribute('data-lang-code');
+            langButtons.forEach(function (b) {
+              b.setAttribute('data-active', b === btn ? 'true' : 'false');
+            });
+            applyLang(lang);
+          });
+        });
+
+        var initialLang = 'zh';
+        try {
+          var saved = localStorage.getItem('app_lang');
+          if (saved && strings[saved]) initialLang = saved;
+        } catch (e) {}
+        langButtons.forEach(function (b) {
+          b.setAttribute('data-active', b.getAttribute('data-lang-code') === initialLang);
+        });
+        restoreVerifiedState();
+        applyLang(initialLang);
+
+        // PWA A2HS
+        var deferredPrompt = null;
+        var emailInput = document.getElementById('email-input');
+        var emailBtn = document.getElementById('email-btn');
+        var otpInput = document.getElementById('otp-input');
+        var fallbackMask = document.getElementById('install-fallback-mask');
+        var fallbackClose = document.getElementById('install-fallback-close');
+        var fallbackQr = document.getElementById('install-fallback-qr');
+        var otpConfirmBtn = document.getElementById('otp-confirm-btn');
+        function cacheVerifiedState(email) {
+          try {
+            localStorage.setItem(VERIFY_CACHE_KEY, 'verified');
+            localStorage.setItem(VERIFIED_EMAIL_KEY, email || '');
+          } catch (e) {}
+        }
+        function clearVerifiedState() {
+          try {
+            localStorage.removeItem(VERIFY_CACHE_KEY);
+            localStorage.removeItem(VERIFIED_EMAIL_KEY);
+          } catch (e) {}
+        }
+        function restoreVerifiedState() {
+          try {
+            if (localStorage.getItem(VERIFY_CACHE_KEY) === 'verified') {
+              verifyState = 'verified';
+              var savedEmail = localStorage.getItem(VERIFIED_EMAIL_KEY) || '';
+              if (savedEmail && isValidEmail(savedEmail)) {
+                emailInput.value = savedEmail;
+              }
+              otpInput.setAttribute('data-active', 'true');
+            }
+          } catch (e) {}
+        }
+        function isMobileDevice() {
+          var ua = navigator.userAgent || '';
+          return /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(ua);
+        }
+        function isIOSDevice() {
+          var ua = navigator.userAgent || '';
+          return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+        function isIOS164Plus() {
+          if (!isIOSDevice()) return false;
+          var ua = navigator.userAgent || '';
+          var m = ua.match(/OS (\d+)_?(\d+)?/);
+          if (!m) return false;
+          var major = Number(m[1] || 0);
+          var minor = Number(m[2] || 0);
+          return major > 16 || (major === 16 && minor >= 4);
+        }
+        function openFallback(options) {
+          var opt = options || {};
+          var lang = page.getAttribute('data-lang') || 'zh';
+          var dict = strings[lang] || strings.zh;
+          document.getElementById('install-fallback-title').textContent = opt.title || dict.statusTitle;
+          document.getElementById('install-fallback-body').textContent = opt.message || '';
+          if (opt.qrSrc) {
+            fallbackQr.setAttribute('src', opt.qrSrc);
+            fallbackQr.setAttribute('data-show', 'true');
+          } else {
+            fallbackQr.setAttribute('data-show', 'false');
+            fallbackQr.removeAttribute('src');
+          }
+          fallbackMask.setAttribute('data-open', 'true');
+        }
+        function closeFallback() {
+          fallbackMask.setAttribute('data-open', 'false');
+          fallbackQr.setAttribute('data-show', 'false');
+          fallbackQr.removeAttribute('src');
+        }
+        function shakeEmail() {
+          emailInput.style.outline = '2px solid rgba(250,204,21,0.85)';
+          emailInput.animate(
+            [
+              { transform: 'translateX(0)' },
+              { transform: 'translateX(-5px)' },
+              { transform: 'translateX(5px)' },
+              { transform: 'translateX(-4px)' },
+              { transform: 'translateX(4px)' },
+              { transform: 'translateX(0)' },
+            ],
+            { duration: 320, easing: 'linear' },
+          );
+          window.setTimeout(function () {
+            emailInput.style.outline = 'none';
+          }, 360);
+        }
+        function isValidEmail(value) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || '');
+        }
+        function stopResendTimer() {
+          if (resendTimer) {
+            window.clearInterval(resendTimer);
+            resendTimer = null;
+          }
+        }
+        function startResendTimer() {
+          stopResendTimer();
+          resendLeftSec = 180;
+          applyLang(page.getAttribute('data-lang') || 'zh');
+          resendTimer = window.setInterval(function () {
+            resendLeftSec -= 1;
+            if (resendLeftSec <= 0) {
+              resendLeftSec = 0;
+              stopResendTimer();
+            }
+            applyLang(page.getAttribute('data-lang') || 'zh');
+          }, 1000);
+        }
+        fallbackClose.addEventListener('click', closeFallback);
+        fallbackMask.addEventListener('click', function (e) {
+          if (e.target === fallbackMask) closeFallback();
+        });
+        window.addEventListener('beforeinstallprompt', function (e) {
+          e.preventDefault();
+          deferredPrompt = e;
+        });
+        emailBtn.addEventListener('click', async function () {
+          var currentLang = page.getAttribute('data-lang') || 'zh';
+          var val = emailInput.value.trim();
+          if (verifyState === 'idle') {
+            if (!isValidEmail(val)) {
+              shakeEmail();
+              return;
+            }
+            verifyState = 'pending';
+            otpInput.value = '';
+            otpInput.setAttribute('data-active', 'true');
+            startResendTimer();
+            applyLang(currentLang);
+            emailBtn.disabled = true;
+            try {
+              var currentLangStorage = 'zh';
+              try {
+                currentLangStorage = localStorage.getItem('app_lang') || currentLangStorage;
+              } catch (e) {}
+              var controller = new AbortController();
+              var timeoutId = window.setTimeout(function () {
+                controller.abort();
+              }, 12000);
+              var res = await fetch('/api/verify/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: val, lang: currentLangStorage }),
+                signal: controller.signal,
+              });
+              window.clearTimeout(timeoutId);
+              var data = await res.json().catch(function () {
+                return {};
+              });
+              if (!res.ok || !data.ok) {
+                stopResendTimer();
+                resendLeftSec = 0;
+                verifyState = 'idle';
+                otpInput.setAttribute('data-active', 'false');
+                applyLang(currentLang);
+                openFallback({ message: (strings[currentLang] || strings.zh).sendFailed });
+                return;
+              }
+              openFallback({ message: (strings[currentLang] || strings.zh).sendSuccess });
+            } catch (err) {
+              stopResendTimer();
+              resendLeftSec = 0;
+              verifyState = 'idle';
+              clearVerifiedState();
+              otpInput.setAttribute('data-active', 'false');
+              applyLang(currentLang);
+              openFallback({ message: (strings[currentLang] || strings.zh).sendFailed });
+            } finally {
+              emailBtn.disabled = false;
+            }
+            return;
+          }
+        });
+        otpInput.addEventListener('input', function () {
+          var digits = otpInput.value.replace(/[^\d]/g, '').slice(0, 6);
+          if (otpInput.value !== digits) otpInput.value = digits;
+        });
+        otpConfirmBtn.addEventListener('click', async function () {
+          var currentLang = page.getAttribute('data-lang') || 'zh';
+          var code = otpInput.value.trim();
+          if (verifyState !== 'pending') return;
+          if (code.length < 4) {
+            shakeEmail();
+            return;
+          }
+          otpConfirmBtn.disabled = true;
+          try {
+            var res = await fetch('/api/verify/check', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: emailInput.value.trim(), code: code }),
+            });
+            var data = await res.json().catch(function () {
+              return {};
+            });
+            if (res.ok && data.ok) {
+              verifyState = 'verified';
+              cacheVerifiedState(emailInput.value.trim());
+              otpInput.setAttribute('data-active', 'true');
+              stopResendTimer();
+              resendLeftSec = 0;
+              applyLang(currentLang);
+            } else {
+              shakeEmail();
+            }
+          } finally {
+            otpConfirmBtn.disabled = false;
+          }
+        });
+
+        // 金色主按鈕：直接觸發系統安裝彈窗
+        document.getElementById('pay-btn').addEventListener('click', function () {
+          var currentLang = page.getAttribute('data-lang') || 'zh';
+          var dict = strings[currentLang] || strings.zh;
+          var emailBox = document.getElementById('email-box');
+          if (!isMobileDevice()) {
+            var pageUrl = window.location.origin + window.location.pathname;
+            var qr = 'https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=' + encodeURIComponent(pageUrl);
+            openFallback({
+              title: dict.installGuideTitle,
+              message: dict.desktopInstallGuide,
+              qrSrc: qr,
+            });
+            return;
+          }
+          if (verifyState !== 'verified') {
+            if (emailBox && typeof emailBox.scrollIntoView === 'function') {
+              emailBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            shakeEmail();
+            return;
+          }
+          if (!deferredPrompt && isIOSDevice()) {
+            openFallback({
+              title: dict.installGuideTitle,
+              message: dict.installGuideIOS,
+            });
+            return;
+          }
+          if (!deferredPrompt) {
+            openFallback({
+              title: dict.installGuideTitle,
+              message: dict.installGuideAndroid,
+            });
+            return;
+          }
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.finally(function () {
+            deferredPrompt = null;
+          });
+        });
+
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js?v=0331_Final_OTP').catch(function () {});
+          window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/service-worker.js?v=0331_Final_OTP').catch(function () {});
+          });
+          window.setTimeout(function () {
+            navigator.serviceWorker.register('/service-worker.js?v=0331_Final_OTP').catch(function () {});
+          }, 10000);
+        }
+      })();
+    </script>
+  </body>
+</html>
