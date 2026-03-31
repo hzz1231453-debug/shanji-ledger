@@ -365,7 +365,7 @@
         padding: 13px 16px;
         font-size: 13px;
         font-weight: 800;
-        letter-spacing: 0.16em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
         background: radial-gradient(circle at 30% 0%, #facc15 0, #f97316 45%, #92400e 100%);
         color: #020617;
@@ -386,6 +386,11 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+      }
+      #pay-label {
+        display: inline-flex;
+        align-items: center;
+        line-height: 1;
       }
       .cta-shell.cta-disabled::before {
         animation: none;
@@ -787,7 +792,6 @@
         var fallbackMask = document.getElementById('install-fallback-mask');
         var fallbackClose = document.getElementById('install-fallback-close');
         var otpConfirmBtn = document.getElementById('otp-confirm-btn');
-        var otpCode = '';
         function isIOSDevice() {
           var ua = navigator.userAgent || '';
           return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -801,7 +805,10 @@
           var minor = Number(m[2] || 0);
           return major > 16 || (major === 16 && minor >= 4);
         }
-        function openFallback() {
+        function openFallback(message) {
+          if (message) {
+            document.getElementById('install-fallback-body').textContent = message;
+          }
           fallbackMask.setAttribute('data-open', 'true');
         }
         function closeFallback() {
@@ -846,9 +853,6 @@
             applyLang(page.getAttribute('data-lang') || 'zh');
           }, 1000);
         }
-        function genOtpCode() {
-          return String(Math.floor(100000 + Math.random() * 900000));
-        }
         fallbackClose.addEventListener('click', closeFallback);
         fallbackMask.addEventListener('click', function (e) {
           if (e.target === fallbackMask) closeFallback();
@@ -865,31 +869,48 @@
               shakeEmail();
               return;
             }
+            verifyState = 'pending';
+            otpInput.value = '';
+            otpInput.setAttribute('data-active', 'true');
+            startResendTimer();
+            applyLang(currentLang);
             emailBtn.disabled = true;
             try {
               var currentLangStorage = 'zh';
               try {
                 currentLangStorage = localStorage.getItem('app_lang') || currentLangStorage;
               } catch (e) {}
+              var controller = new AbortController();
+              var timeoutId = window.setTimeout(function () {
+                controller.abort();
+              }, 12000);
               var res = await fetch('/api/verify/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: val, lang: currentLangStorage }),
+                signal: controller.signal,
               });
+              window.clearTimeout(timeoutId);
               var data = await res.json().catch(function () {
                 return {};
               });
               if (!res.ok || !data.ok) {
-                otpCode = '';
-                openFallback();
+                stopResendTimer();
+                resendLeftSec = 0;
+                verifyState = 'idle';
+                otpInput.setAttribute('data-active', 'false');
+                applyLang(currentLang);
+                openFallback('发信失败，请检查配置或稍后再试。');
                 return;
               }
-              otpCode = genOtpCode();
-              verifyState = 'pending';
-              otpInput.value = '';
-              otpInput.setAttribute('data-active', 'true');
-              startResendTimer();
+              openFallback('验证码已发出，请检查邮箱。');
+            } catch (err) {
+              stopResendTimer();
+              resendLeftSec = 0;
+              verifyState = 'idle';
+              otpInput.setAttribute('data-active', 'false');
               applyLang(currentLang);
+              openFallback('发信失败，请检查配置或稍后再试。');
             } finally {
               emailBtn.disabled = false;
             }
@@ -921,6 +942,8 @@
             if (res.ok && data.ok) {
               verifyState = 'verified';
               otpInput.setAttribute('data-active', 'true');
+              stopResendTimer();
+              resendLeftSec = 0;
               applyLang(currentLang);
             } else {
               shakeEmail();
@@ -937,11 +960,11 @@
             return;
           }
           if (!deferredPrompt && isIOS164Plus()) {
-            openFallback();
+            openFallback('发信失败，请检查配置或稍后再试。');
             return;
           }
           if (!deferredPrompt) {
-            openFallback();
+            openFallback('发信失败，请检查配置或稍后再试。');
             return;
           }
           deferredPrompt.prompt();
