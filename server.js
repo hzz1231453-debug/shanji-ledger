@@ -4,8 +4,8 @@ const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-/** 老字号：固定只监听 5000，不使用 process.env.PORT（避免出现 8080） */
-const PORT = 5000;
+/** Railway 端口優先，其次退回老字號 5000 */
+const PORT = Number(process.env.PORT || 5000);
 const HOST = '0.0.0.0';
 
 const RESEND_FROM = 'onboarding@resend.dev';
@@ -219,7 +219,11 @@ app.get('/health', (req, res) => {
 app.get('(.*)', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
+process.on('SIGTERM', () => {
+  console.log('收到停止信号，但我还能撑一会儿...');
+  process.exit(0);
+});
 
 app.listen(PORT, HOST, () => {
-  console.log(`[闪记] 启动成功，老字号固定监听端口: ${PORT} (HOST=${HOST})`);
+  console.log(`[闪记] 启动成功，监听端口: ${PORT} (HOST=${HOST})`);
 });
