@@ -212,9 +212,9 @@ app.post('/api/verify/check', (req, res) => {
   return res.json({ ok: true, verified: true });
 });
 
-app.get('/health', (req, res) =>
-  res.json({ status: 'OK', service: 'shanji-ledger', listenPort: PORT }),
-);
+app.get('/health', (req, res) => {
+  res.send('OK');
+});
 
 app.get('(.*)', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
