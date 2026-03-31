@@ -2,19 +2,19 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="/manifest.json?v=1.1.0" />
     <meta name="theme-color" content="#020617" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="闪记" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png?v=1.1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&display=swap&v=1.1.0"
       rel="stylesheet"
     />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1.1.0" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
@@ -202,9 +202,11 @@
       .email-row {
         display: flex;
         gap: 8px;
+        flex-wrap: wrap;
       }
       .email-row input {
-        flex: 1;
+        flex: 1 1 200px;
+        min-width: 0;
         border-radius: 999px;
         border: 1px solid rgba(75, 85, 99, 0.9);
         padding: 9px 11px;
@@ -216,15 +218,22 @@
         color: rgba(148, 163, 184, 0.9);
       }
       .email-btn {
+        flex: 0 0 auto;
+        min-width: max-content;
         border-radius: 999px;
         border: none;
         padding: 9px 12px;
-        font-size: 11px;
+        font-size: clamp(10px, 2.8vw, 11px);
         font-weight: 700;
         background: linear-gradient(120deg, #22c55e, #16a34a);
         color: #ecfdf5;
         cursor: pointer;
         white-space: nowrap;
+      }
+      .email-status {
+        min-height: 14px;
+        font-size: 10px;
+        color: rgba(148, 163, 184, 0.95);
       }
       .pwa-btn {
         margin-top: 4px;
@@ -453,6 +462,7 @@
             />
             <button class="email-btn" type="button" id="email-btn"></button>
           </div>
+          <div class="email-status" id="email-status"></div>
           <button class="pwa-btn" type="button" id="a2hs-btn" data-visible="false"></button>
         </section>
 
@@ -471,7 +481,6 @@
           </div>
           <div class="cta-shell">
             <button id="pay-btn" class="cta-btn" type="button">
-              <span class="icon">⚡</span>
               <span id="pay-label"></span>
             </button>
           </div>
@@ -501,6 +510,8 @@
             basicThumb4: '自动汇总',
             emailLabel: '输入邮箱申请，即刻开始。',
             emailBtn: '获取验证码',
+            emailBtnPending: '完成邮箱验证',
+            emailBtnDone: '邮箱已验证',
             pwaBtn: '添加至手机 APP',
             proKicker: 'PRO · UPGRADE',
             proTitle: '升级版：解锁无限可能',
@@ -510,7 +521,9 @@
             proThumb2: '多店对比',
             proThumb3: '税前预估',
             proThumb4: '合伙人报告',
-            payLabel: '添加至手机 APP',
+            payLabelIdle: '请先验证邮箱',
+            payLabelPending: '验证通过后即可添加',
+            payLabelVerified: '⚡ 立即领取手机 APP 永久权限',
             installFallbackTitle: '安装指引',
             installFallbackBody:
               '⚡ 立即领取手机 APP 永久权限',
@@ -529,6 +542,8 @@
             basicThumb4: '자동 집계',
             emailLabel: '이메일을 입력하면 바로 시작할 수 있습니다.',
             emailBtn: '인증 코드 받기',
+            emailBtnPending: '이메일 인증 완료',
+            emailBtnDone: '이메일 인증됨',
             pwaBtn: '휴대폰 APP에 추가',
             proKicker: 'PRO · UPGRADE',
             proTitle: '업그레이드: 무한한 가능성',
@@ -538,7 +553,9 @@
             proThumb2: '매장별 비교',
             proThumb3: '세전 추정',
             proThumb4: '파트너 리포트',
-            payLabel: '휴대폰 APP에 추가',
+            payLabelIdle: '먼저 이메일 인증',
+            payLabelPending: '인증 후 추가 가능',
+            payLabelVerified: '⚡ 立即领取手机 APP 永久权限',
             installFallbackTitle: '설치 안내',
             installFallbackBody:
               '⚡ 立即领取手机 APP 永久权限',
@@ -556,6 +573,8 @@
             basicThumb4: '自動サマリ',
             emailLabel: 'メールアドレスを入力して、今すぐ始めましょう。',
             emailBtn: '認証コードを受け取る',
+            emailBtnPending: 'メール認証を完了',
+            emailBtnDone: 'メール認証済み',
             pwaBtn: 'スマホ APPに追加',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'アップグレード版：無限の可能性',
@@ -565,7 +584,9 @@
             proThumb2: '店舗別比較',
             proThumb3: '税引前試算',
             proThumb4: 'パートナー用レポート',
-            payLabel: 'スマホ APPに追加',
+            payLabelIdle: 'まずメール認証',
+            payLabelPending: '認証後に追加可能',
+            payLabelVerified: '⚡ 立即领取手机 APP 永久权限',
             installFallbackTitle: 'インストール案内',
             installFallbackBody:
               '⚡ 立即领取手机 APP 永久权限',
@@ -584,6 +605,8 @@
             basicThumb4: 'Auto summary',
             emailLabel: 'Enter your email to apply and start instantly.',
             emailBtn: 'Get verification code',
+            emailBtnPending: 'Complete email verification',
+            emailBtnDone: 'Email verified',
             pwaBtn: 'Add to Mobile APP',
             proKicker: 'PRO · UPGRADE',
             proTitle: 'Pro: unlock unlimited potential',
@@ -594,7 +617,9 @@
             proThumb2: 'Store comparisons',
             proThumb3: 'Pre‑tax preview',
             proThumb4: 'Partner-ready reports',
-            payLabel: 'Add to Mobile APP',
+            payLabelIdle: 'Verify Email First',
+            payLabelPending: 'Add after Verification',
+            payLabelVerified: '⚡ 立即领取手机 APP 永久权限',
             installFallbackTitle: 'Install Guide',
             installFallbackBody:
               '⚡ 立即领取手机 APP 永久权限',
@@ -605,6 +630,7 @@
 
         var langButtons = document.querySelectorAll('.lang-btn');
         var page = document.querySelector('.page');
+        var verifyState = 'idle'; // idle -> pending -> verified
 
         function applyLang(lang) {
           var dict = strings[lang] || strings.zh;
@@ -629,7 +655,12 @@
           document.getElementById('basic-thumb-3').textContent = dict.basicThumb3;
           document.getElementById('basic-thumb-4').textContent = dict.basicThumb4;
           document.getElementById('email-label').textContent = dict.emailLabel;
-          document.getElementById('email-btn').textContent = dict.emailBtn;
+          document.getElementById('email-btn').textContent =
+            verifyState === 'verified'
+              ? dict.emailBtnDone
+              : verifyState === 'pending'
+                ? dict.emailBtnPending
+                : dict.emailBtn;
           document.getElementById('pro-kicker').textContent = dict.proKicker;
           document.getElementById('pro-title').textContent = dict.proTitle;
           document.getElementById('pro-desc').textContent = dict.proDesc;
@@ -638,9 +669,20 @@
           document.getElementById('pro-thumb-2').textContent = dict.proThumb2;
           document.getElementById('pro-thumb-3').textContent = dict.proThumb3;
           document.getElementById('pro-thumb-4').textContent = dict.proThumb4;
-          document.getElementById('pay-label').textContent = dict.payLabel;
+          document.getElementById('pay-label').textContent =
+            verifyState === 'verified'
+              ? dict.payLabelVerified
+              : verifyState === 'pending'
+                ? dict.payLabelPending
+                : dict.payLabelIdle;
           document.getElementById('cta-note').textContent = dict.ctaNote;
           document.getElementById('a2hs-btn').textContent = dict.pwaBtn;
+          document.getElementById('email-status').textContent =
+            verifyState === 'verified'
+              ? dict.emailBtnDone
+              : verifyState === 'pending'
+                ? dict.payLabelPending
+                : dict.payLabelIdle;
           document.getElementById('install-fallback-title').textContent = dict.installFallbackTitle;
           document.getElementById('install-fallback-body').textContent = dict.installFallbackBody;
           document.getElementById('install-fallback-close').textContent = dict.installFallbackClose;
@@ -669,6 +711,8 @@
         // PWA A2HS
         var deferredPrompt = null;
         var a2hsBtn = document.getElementById('a2hs-btn');
+        var emailInput = document.getElementById('email-input');
+        var emailBtn = document.getElementById('email-btn');
         var fallbackMask = document.getElementById('install-fallback-mask');
         var fallbackClose = document.getElementById('install-fallback-close');
         function isIOSDevice() {
@@ -690,6 +734,26 @@
         function closeFallback() {
           fallbackMask.setAttribute('data-open', 'false');
         }
+        function shakeEmail() {
+          emailInput.style.outline = '2px solid rgba(250,204,21,0.85)';
+          emailInput.animate(
+            [
+              { transform: 'translateX(0)' },
+              { transform: 'translateX(-5px)' },
+              { transform: 'translateX(5px)' },
+              { transform: 'translateX(-4px)' },
+              { transform: 'translateX(4px)' },
+              { transform: 'translateX(0)' },
+            ],
+            { duration: 320, easing: 'linear' },
+          );
+          window.setTimeout(function () {
+            emailInput.style.outline = 'none';
+          }, 360);
+        }
+        function isValidEmail(value) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || '');
+        }
         fallbackClose.addEventListener('click', closeFallback);
         fallbackMask.addEventListener('click', function (e) {
           if (e.target === fallbackMask) closeFallback();
@@ -702,6 +766,23 @@
         if (isIOSDevice() && !window.matchMedia('(display-mode: standalone)').matches) {
           a2hsBtn.setAttribute('data-visible', 'true');
         }
+        emailBtn.addEventListener('click', function () {
+          var currentLang = page.getAttribute('data-lang') || 'zh';
+          var val = emailInput.value.trim();
+          if (verifyState === 'idle') {
+            if (!isValidEmail(val)) {
+              shakeEmail();
+              return;
+            }
+            verifyState = 'pending';
+            applyLang(currentLang);
+            return;
+          }
+          if (verifyState === 'pending') {
+            verifyState = 'verified';
+            applyLang(currentLang);
+          }
+        });
         a2hsBtn.addEventListener('click', function () {
           if (!deferredPrompt) {
             openFallback();
@@ -716,6 +797,10 @@
 
         // 金色主按鈕：直接觸發系統安裝彈窗
         document.getElementById('pay-btn').addEventListener('click', function () {
+          if (verifyState !== 'verified') {
+            shakeEmail();
+            return;
+          }
           if (!deferredPrompt && isIOS164Plus()) {
             openFallback();
             return;
@@ -732,12 +817,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/service-worker.js').catch(function () {});
+          navigator.serviceWorker.register('/service-worker.js?v=1.1.0').catch(function () {});
           window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/service-worker.js').catch(function () {});
+            navigator.serviceWorker.register('/service-worker.js?v=1.1.0').catch(function () {});
           });
           window.setTimeout(function () {
-            navigator.serviceWorker.register('/service-worker.js').catch(function () {});
+            navigator.serviceWorker.register('/service-worker.js?v=1.1.0').catch(function () {});
           }, 10000);
         }
       })();
