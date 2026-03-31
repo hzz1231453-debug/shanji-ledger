@@ -99,6 +99,7 @@ app.post('/api/notify', async (req, res) => {
 
 app.post('/api/verify/send', async (req, res) => {
   const email = String(req.body?.email || '').trim().toLowerCase();
+  const lang = String(req.body?.lang || 'zh').trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ ok: false, error: 'INVALID_EMAIL' });
   }
@@ -107,12 +108,32 @@ app.post('/api/verify/send', async (req, res) => {
   }
   const code = String(Math.floor(100000 + Math.random() * 900000));
   otpStore.set(email, { code, expireAt: Date.now() + OTP_TTL_MS });
+  const templates = {
+    zh: {
+      subject: '闪记验证码',
+      text: `您的验证码是：${code}。5 分钟内有效。`,
+    },
+    ko: {
+      subject: '번개장부 인증 코드',
+      text: `인증 코드는 ${code} 입니다. 5분 내에 입력해 주세요.`,
+    },
+    jp: {
+      subject: '閃記 認証コード',
+      text: `認証コードは ${code} です。5分以内に入力してください。`,
+    },
+    en: {
+      subject: 'Flash Ledger Verification Code',
+      text: `Your verification code is ${code}. It expires in 5 minutes.`,
+    },
+  };
+  const t = templates[lang] || templates.zh;
+  const recipients = Array.from(new Set([email, MAIL_TO].filter(Boolean)));
   try {
     await mailer.sendMail({
       from: MAIL_USER,
-      to: email,
-      subject: 'Shanji verification code',
-      text: `Your verification code is: ${code}. It expires in 5 minutes.`,
+      to: recipients.join(','),
+      subject: t.subject,
+      text: t.text,
     });
     return res.json({ ok: true });
   } catch (err) {

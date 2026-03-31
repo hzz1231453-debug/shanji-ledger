@@ -571,6 +571,7 @@
             emailBtn: '获取验证码',
             emailBtnPending: '验证码已发送',
             emailBtnDone: '邮箱已验证',
+            emailBtnRetrySuffix: '后重试',
             otpConfirmBtn: '确定验证',
             otpPlaceholder: '请输入4-6位验证码',
             proKicker: 'PRO · UPGRADE',
@@ -603,6 +604,7 @@
             emailBtn: '인증 코드 받기',
             emailBtnPending: '인증번호 전송됨',
             emailBtnDone: '이메일 인증됨',
+            emailBtnRetrySuffix: '후 재시도',
             otpConfirmBtn: '인증 확인',
             otpPlaceholder: '4-6자리 인증번호 입력',
             proKicker: 'PRO · UPGRADE',
@@ -634,6 +636,7 @@
             emailBtn: '認証コードを受け取る',
             emailBtnPending: '認証コード送信済み',
             emailBtnDone: 'メール認証済み',
+            emailBtnRetrySuffix: '秒後に再試行',
             otpConfirmBtn: '認証を確定',
             otpPlaceholder: '4-6桁の認証コードを入力',
             proKicker: 'PRO · UPGRADE',
@@ -666,6 +669,7 @@
             emailBtn: 'Get verification code',
             emailBtnPending: 'Code sent',
             emailBtnDone: 'Email verified',
+            emailBtnRetrySuffix: 's retry',
             otpConfirmBtn: 'Confirm verification',
             otpPlaceholder: 'Enter 4-6 digit code',
             proKicker: 'PRO · UPGRADE',
@@ -690,6 +694,8 @@
         var langButtons = document.querySelectorAll('.lang-btn');
         var page = document.querySelector('.page');
         var verifyState = 'idle'; // idle -> pending -> verified
+        var resendLeftSec = 0;
+        var resendTimer = null;
 
         function applyLang(lang) {
           var dict = strings[lang] || strings.zh;
@@ -714,12 +720,15 @@
           document.getElementById('basic-thumb-3').textContent = dict.basicThumb3;
           document.getElementById('basic-thumb-4').textContent = dict.basicThumb4;
           document.getElementById('email-label').textContent = dict.emailLabel;
-          document.getElementById('email-btn').textContent =
+          var emailBtnText =
             verifyState === 'verified'
               ? dict.emailBtnDone
               : verifyState === 'pending'
-                ? dict.emailBtnPending
+                ? resendLeftSec > 0
+                  ? String(resendLeftSec) + 's ' + dict.emailBtnRetrySuffix
+                  : dict.emailBtnPending
                 : dict.emailBtn;
+          document.getElementById('email-btn').textContent = emailBtnText;
           document.getElementById('pro-kicker').textContent = dict.proKicker;
           document.getElementById('pro-title').textContent = dict.proTitle;
           document.getElementById('pro-desc').textContent = dict.proDesc;
@@ -818,6 +827,25 @@
         function isValidEmail(value) {
           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || '');
         }
+        function stopResendTimer() {
+          if (resendTimer) {
+            window.clearInterval(resendTimer);
+            resendTimer = null;
+          }
+        }
+        function startResendTimer() {
+          stopResendTimer();
+          resendLeftSec = 180;
+          applyLang(page.getAttribute('data-lang') || 'zh');
+          resendTimer = window.setInterval(function () {
+            resendLeftSec -= 1;
+            if (resendLeftSec <= 0) {
+              resendLeftSec = 0;
+              stopResendTimer();
+            }
+            applyLang(page.getAttribute('data-lang') || 'zh');
+          }, 1000);
+        }
         function genOtpCode() {
           return String(Math.floor(100000 + Math.random() * 900000));
         }
@@ -839,10 +867,14 @@
             }
             emailBtn.disabled = true;
             try {
+              var currentLangStorage = 'zh';
+              try {
+                currentLangStorage = localStorage.getItem('app_lang') || currentLangStorage;
+              } catch (e) {}
               var res = await fetch('/api/verify/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: val }),
+                body: JSON.stringify({ email: val, lang: currentLangStorage }),
               });
               var data = await res.json().catch(function () {
                 return {};
@@ -856,6 +888,7 @@
               verifyState = 'pending';
               otpInput.value = '';
               otpInput.setAttribute('data-active', 'true');
+              startResendTimer();
               applyLang(currentLang);
             } finally {
               emailBtn.disabled = false;
