@@ -2,23 +2,24 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
-const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0';
 
-// 基础配置
+const RESEND_FROM = 'onboarding@resend.dev';
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+/** 營運通知信收件（選填）；驗證碼主要寄往使用者輸入的郵箱 */
+const MAIL_TO = process.env.MAIL_TO || '';
+
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
-// --- 核心：静态资源指向根目录，支持成品平铺 ---
 app.use(express.static(__dirname));
 
 const DB_PATH = path.resolve(process.cwd(), 'ledger-db.json');
 const QUOTA_DB_PATH = path.resolve(process.cwd(), 'ledger-quota.json');
 
-// --- 数据库存取逻辑 ---
 const readDb = () => {
   try {
     return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
@@ -39,38 +40,69 @@ const writeQuota = (data) => fs.writeFileSync(QUOTA_DB_PATH, JSON.stringify(data
 const OTP_TTL_MS = 5 * 60 * 1000;
 const otpStore = new Map();
 
-// --- 郵件發送（Gmail App Password，走環境變數） ---
-const MAIL_USER = process.env.MAIL_USER || '';
-const MAIL_PASS = process.env.MAIL_PASS || '';
-const MAIL_TO = process.env.MAIL_TO || MAIL_USER;
+async function sendViaResend({ to, subject, text }) {
+  const toList = Array.isArray(to) ? [...new Set(to.map((e) => String(e).trim()).filter(Boolean))] : [String(to).trim()];
+  if (!toList.length) {
+    const full = { type: 'NO_RECIPIENTS', resendResponse: { message: 'No recipients' } };
+    console.error('[RESEND_ERROR_FULL]', JSON.stringify(full, null, 2));
+    throw Object.assign(new Error('NO_RECIPIENTS'), { resendFull: full });
+  }
 
-/** Railway Logs 對照：印出 Nodemailer 實際解析後的連線選項（含 port） */
-function logSmtpTransportDiag(m, tag) {
-  if (!m || !m.options) return;
-  console.log('Current Port:', m.options.port);
-  console.log('[SMTP_DIAG]', tag, {
-    service: m.options.service,
-    host: m.options.host,
-    port: m.options.port,
-    secure: m.options.secure,
-    requireTLS: m.options.requireTLS,
-  });
+  let res;
+  let rawText;
+  try {
+    res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: RESEND_FROM,
+        to: toList,
+        subject,
+        text,
+      }),
+    });
+    rawText = await res.text();
+  } catch (netErr) {
+    const full = {
+      type: 'FETCH_FAILED',
+      message: netErr && netErr.message ? netErr.message : String(netErr),
+      name: netErr && netErr.name,
+    };
+    console.error('[RESEND_ERROR_FULL]', JSON.stringify(full, null, 2));
+    throw Object.assign(netErr, { resendFull: full });
+  }
+  let parsed;
+  try {
+    parsed = rawText ? JSON.parse(rawText) : {};
+  } catch {
+    parsed = { raw: rawText };
+  }
+
+  if (!res.ok) {
+    const full = {
+      httpStatus: res.status,
+      httpStatusText: res.statusText,
+      resendResponse: parsed,
+    };
+    console.error('[RESEND_ERROR_FULL]', JSON.stringify(full, null, 2));
+    const err = new Error('RESEND_API_FAILED');
+    err.resendFull = full;
+    throw err;
+  }
+
+  return parsed;
 }
 
-let mailer = null;
-if (MAIL_USER && MAIL_PASS) {
-  // Gmail App Password：使用內建 well-known（service: 'gmail'），通常比手動 host/port 更省事
-  mailer = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: MAIL_USER,
-      pass: MAIL_PASS,
-    },
-  });
-  logSmtpTransportDiag(mailer, 'startup');
+const resendReady = Boolean(RESEND_API_KEY);
+if (!resendReady) {
+  console.warn('[RESEND] RESEND_API_KEY 未設定，發信 API 將回 500');
+} else {
+  console.log('[RESEND] 已載入 API Key（長度 ' + RESEND_API_KEY.length + '），發件人: ' + RESEND_FROM);
 }
 
-// --- 核心 API ---
 app.get('/api/test', (req, res) => res.json({ ok: true, service: 'shanji-ledger' }));
 
 app.get('/api/records', (req, res) => res.json(readDb()));
@@ -91,24 +123,26 @@ app.get('/api/user/quota', (req, res) => {
 });
 
 app.post('/api/notify', async (req, res) => {
-  if (!mailer) {
+  if (!resendReady) {
     return res.status(500).json({ ok: false, error: 'MAIL_NOT_CONFIGURED' });
   }
   const subject = req.body?.subject || 'Flash Ledger payment notice';
   const text =
     req.body?.text ||
     'A new Flash Ledger payment or quota event occurred. Please check your dashboard.';
+  const to = req.body?.to || MAIL_TO;
+  if (!to) {
+    return res.status(400).json({ ok: false, error: 'MISSING_RECIPIENT', hint: 'Set MAIL_TO or pass body.to' });
+  }
   try {
-    logSmtpTransportDiag(mailer, 'notify_send');
-    await mailer.sendMail({
-      from: MAIL_USER,
-      to: MAIL_TO || MAIL_USER,
-      subject,
-      text,
-    });
+    await sendViaResend({ to, subject, text });
     res.json({ ok: true });
   } catch (err) {
-    console.error('[MAIL_ERROR]', err);
+    if (err.resendFull) {
+      console.error('[MAIL_ERROR]', JSON.stringify(err.resendFull, null, 2));
+    } else {
+      console.error('[MAIL_ERROR]', err);
+    }
     res.status(500).json({ ok: false, error: 'MAIL_SEND_FAILED' });
   }
 });
@@ -119,7 +153,7 @@ app.post('/api/verify/send', async (req, res) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ ok: false, error: 'INVALID_EMAIL' });
   }
-  if (!mailer) {
+  if (!resendReady) {
     return res.status(500).json({ ok: false, error: 'MAIL_NOT_CONFIGURED' });
   }
   const code = String(Math.floor(100000 + Math.random() * 900000));
@@ -145,16 +179,15 @@ app.post('/api/verify/send', async (req, res) => {
   const t = templates[lang] || templates.zh;
   const recipients = Array.from(new Set([email, MAIL_TO].filter(Boolean)));
   try {
-    logSmtpTransportDiag(mailer, 'verify_send');
-    await mailer.sendMail({
-      from: MAIL_USER,
-      to: recipients.join(','),
-      subject: t.subject,
-      text: t.text,
-    });
+    await sendViaResend({ to: recipients, subject: t.subject, text: t.text });
     return res.json({ ok: true });
   } catch (err) {
-    console.error('[VERIFY_SEND_ERROR]', err);
+    const full = err.resendFull;
+    if (full) {
+      console.error('[VERIFY_SEND_ERROR]', JSON.stringify(full, null, 2));
+    } else {
+      console.error('[VERIFY_SEND_ERROR]', err);
+    }
     return res.status(500).json({ ok: false, error: 'MAIL_SEND_FAILED' });
   }
 });
@@ -175,7 +208,6 @@ app.post('/api/verify/check', (req, res) => {
 
 app.get('/health', (req, res) => res.json({ status: 'OK', service: 'shanji-ledger' }));
 
-// --- 网页兜底：用 '(.*)'，避免原始 PathError，又確保 SPA 任意路徑回 index.html ---
 app.get('(.*)', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
