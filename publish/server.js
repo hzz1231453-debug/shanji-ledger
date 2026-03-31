@@ -4,8 +4,8 @@ const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-/** Railway 端口優先，其次退回老字號 5000 */
-const PORT = Number(process.env.PORT || 5000);
+/** 全域 8080：Railway PORT 優先，其次退回 8080 */
+const PORT = Number(process.env.PORT || 8080);
 const HOST = '0.0.0.0';
 
 const RESEND_FROM = 'onboarding@resend.dev';
@@ -225,5 +225,5 @@ process.on('SIGTERM', () => {
 });
 
 app.listen(PORT, HOST, () => {
-  console.log(`[闪记] 启动成功，监听端口: ${PORT} (HOST=${HOST})`);
+  console.log(`[闪记] 启动成功，监听端口: ${PORT}`);
 });
