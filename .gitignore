@@ -1,1 +1,42 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
 node_modules/
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 環境與本機資料（勿上傳密鑰與執行時狀態）
+.env
+.env.*
+!.env.example
+ledger-db.json
+ledger-quota.json
+
+# 本機備份鏡像（路徑極深，勿進版本庫）
+backups/
+
+# 發佈夾：忽略雜檔，但部署用後端與落地頁進庫（Railway）
+publish/*
+!publish/
+!publish/server.js
+!publish/package.json
+!publish/package-lock.json
+!publish/index.html
