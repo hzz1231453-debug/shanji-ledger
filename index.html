@@ -317,7 +317,21 @@
         font-size: 11px;
         line-height: 1.6;
         color: rgba(241, 245, 249, 0.92);
-        text-align: center;
+        text-align: left;
+        white-space: pre-line;
+      }
+      .install-fallback-qr {
+        display: none;
+        width: 168px;
+        height: 168px;
+        margin: 8px auto 0;
+        border-radius: 10px;
+        border: 1px solid rgba(250, 204, 21, 0.5);
+        background: #fff;
+        object-fit: contain;
+      }
+      .install-fallback-qr[data-show='true'] {
+        display: block;
       }
       .install-fallback-close {
         margin-top: 10px;
@@ -504,7 +518,7 @@
           </div>
         </section>
 
-        <section class="email-box">
+        <section class="email-box" id="email-box">
           <div class="email-label" id="email-label"></div>
           <div class="email-row">
             <input
@@ -547,8 +561,9 @@
           </div>
           <div id="cta-shell" class="cta-shell cta-disabled">
             <button id="pay-btn" class="cta-btn" type="button">
-              <span id="pay-icon" class="icon" style="display:none">⚡</span>
+              <span id="pay-icon" class="icon">⚡</span>
               <span id="pay-label"></span>
+              <span id="pay-version" style="font-size:10px;opacity:.78;letter-spacing:.02em;">v1.1-Resend</span>
             </button>
           </div>
           <div class="cta-note" id="cta-note"></div>
@@ -559,6 +574,7 @@
       <div class="install-fallback-card">
         <div class="install-fallback-title" id="install-fallback-title"></div>
         <div class="install-fallback-body" id="install-fallback-body"></div>
+        <img id="install-fallback-qr" class="install-fallback-qr" alt="install qr code" />
         <button type="button" class="install-fallback-close" id="install-fallback-close"></button>
       </div>
     </div>
@@ -590,11 +606,19 @@
             proThumb2: '多店对比',
             proThumb3: '税前预估',
             proThumb4: '合伙人报告',
-            payLabelIdle: '请先验证邮箱',
-            payLabelVerified: '⚡ 添加至手机 APP',
-            installFallbackTitle: '验证码状态',
-            installFallbackBody:
-              '⚡ 立即领取手机 APP 永久权限',
+            payLabelIdle: '添加至手机 APP',
+            payLabelVerified: '添加至手机 APP',
+            payLabelDesktop: '扫码安装',
+            statusTitle: '验证码状态',
+            sendSuccess: '验证码已发出，请检查邮箱',
+            sendFailed: '发信失败，请检查配置',
+            installGuideTitle: '安装指引',
+            installGuideIOS:
+              'iPhone 安装步骤：\n1) 点击 Safari 底部“分享”按钮\n2) 选择“添加到主屏幕”\n3) 回到桌面打开「闪记」',
+            installGuideAndroid:
+              'Android 安装步骤：\n1) 点击浏览器菜单\n2) 选择“安装应用”或“添加到主屏幕”\n3) 完成后从桌面打开「闪记」',
+            desktopInstallGuide:
+              '当前为电脑端。\n请用手机扫码打开此页面，再点“添加到主屏幕”完成安装。',
             installFallbackClose: '知道了',
             ctaNote: '一次买断，后续升级与修复全部免费推送。',
           },
@@ -623,11 +647,19 @@
             proThumb2: '매장별 비교',
             proThumb3: '세전 추정',
             proThumb4: '파트너 리포트',
-            payLabelIdle: '먼저 이메일 인증',
-            payLabelVerified: '⚡ 添加至手机 APP',
-            installFallbackTitle: '验证码状态',
-            installFallbackBody:
-              '⚡ 立即领取手机 APP 永久权限',
+            payLabelIdle: '휴대폰 앱에 추가',
+            payLabelVerified: '휴대폰 앱에 추가',
+            payLabelDesktop: 'QR로 설치',
+            statusTitle: '인증번호 상태',
+            sendSuccess: '인증번호가 발송되었습니다. 이메일을 확인하세요.',
+            sendFailed: '발송 실패. 설정을 확인하세요.',
+            installGuideTitle: '설치 안내',
+            installGuideIOS:
+              'iPhone 설치 방법:\n1) Safari 하단의 공유 버튼 탭\n2) “홈 화면에 추가” 선택\n3) 홈 화면에서 「번개장부」 실행',
+            installGuideAndroid:
+              'Android 설치 방법:\n1) 브라우저 메뉴 탭\n2) “앱 설치” 또는 “홈 화면에 추가” 선택\n3) 홈 화면에서 「번개장부」 실행',
+            desktopInstallGuide:
+              '현재 PC 화면입니다.\n휴대폰으로 QR을 스캔해 같은 페이지를 연 뒤, 홈 화면에 추가하세요.',
             installFallbackClose: '확인',
             ctaNote: '일시불 결제, 이후 기능 업데이트와 패치는 모두 무료입니다.',
           },
@@ -655,11 +687,19 @@
             proThumb2: '店舗別比較',
             proThumb3: '税引前試算',
             proThumb4: 'パートナー用レポート',
-            payLabelIdle: 'まずメール認証',
-            payLabelVerified: '⚡ 添加至手机 APP',
-            installFallbackTitle: '验证码状态',
-            installFallbackBody:
-              '⚡ 立即领取手机 APP 永久权限',
+            payLabelIdle: 'スマホアプリに追加',
+            payLabelVerified: 'スマホアプリに追加',
+            payLabelDesktop: 'QRでインストール',
+            statusTitle: '認証コードの状態',
+            sendSuccess: '認証コードを送信しました。メールを確認してください。',
+            sendFailed: '送信に失敗しました。設定を確認してください。',
+            installGuideTitle: 'インストール案内',
+            installGuideIOS:
+              'iPhone インストール手順:\n1) Safari 下部の共有ボタンをタップ\n2) 「ホーム画面に追加」を選択\n3) ホーム画面から「閃記」を起動',
+            installGuideAndroid:
+              'Android インストール手順:\n1) ブラウザメニューを開く\n2) 「アプリをインストール」または「ホーム画面に追加」を選択\n3) ホーム画面から「閃記」を起動',
+            desktopInstallGuide:
+              '現在はPC画面です。\nスマホでQRを読み取り、このページを開いてホーム画面に追加してください。',
             installFallbackClose: 'OK',
             ctaNote: '一度の買い切りで、その後のアップデートと修正はすべて無料です。',
           },
@@ -689,11 +729,19 @@
             proThumb2: 'Store comparisons',
             proThumb3: 'Pre‑tax preview',
             proThumb4: 'Partner-ready reports',
-            payLabelIdle: 'Verify Email First',
-            payLabelVerified: '⚡ 添加至手机 APP',
-            installFallbackTitle: '验证码状态',
-            installFallbackBody:
-              '⚡ 立即领取手机 APP 永久权限',
+            payLabelIdle: 'Add to Phone App',
+            payLabelVerified: 'Add to Phone App',
+            payLabelDesktop: 'Install via QR',
+            statusTitle: 'OTP Status',
+            sendSuccess: 'Verification code sent. Please check your email.',
+            sendFailed: 'Send failed. Please check configuration.',
+            installGuideTitle: 'Install Guide',
+            installGuideIOS:
+              'iPhone steps:\n1) Tap the Share button in Safari\n2) Choose “Add to Home Screen”\n3) Open “Flash Ledger” from your home screen',
+            installGuideAndroid:
+              'Android steps:\n1) Open browser menu\n2) Tap “Install app” or “Add to Home screen”\n3) Open “Flash Ledger” from your home screen',
+            desktopInstallGuide:
+              'You are on desktop.\nScan the QR code with your phone, open this page, then add it to home screen.',
             installFallbackClose: 'Got it',
             ctaNote: 'One-time payment. All future upgrades and fixes are pushed for free.',
           },
@@ -702,6 +750,8 @@
         var langButtons = document.querySelectorAll('.lang-btn');
         var page = document.querySelector('.page');
         var verifyState = 'idle'; // idle -> pending -> verified
+        var VERIFY_CACHE_KEY = 'flash_verify_state_v1';
+        var VERIFIED_EMAIL_KEY = 'flash_verified_email_v1';
         var resendLeftSec = 0;
         var resendTimer = null;
 
@@ -745,14 +795,15 @@
           document.getElementById('pro-thumb-2').textContent = dict.proThumb2;
           document.getElementById('pro-thumb-3').textContent = dict.proThumb3;
           document.getElementById('pro-thumb-4').textContent = dict.proThumb4;
-          document.getElementById('pay-label').textContent =
-            verifyState === 'verified' ? dict.payLabelVerified : dict.payLabelIdle;
-          document.getElementById('pay-icon').style.display =
-            verifyState === 'verified' ? 'inline-flex' : 'none';
-          document.getElementById('pay-btn').disabled = verifyState !== 'verified';
+          var desktopMode = !isMobileDevice();
+          document.getElementById('pay-label').textContent = desktopMode
+            ? dict.payLabelDesktop
+            : dict.payLabelVerified;
+          document.getElementById('pay-icon').style.display = 'inline-flex';
+          document.getElementById('pay-btn').disabled = false;
           document
             .getElementById('cta-shell')
-            .classList.toggle('cta-disabled', verifyState !== 'verified');
+            .classList.toggle('cta-disabled', false);
           document.getElementById('cta-note').textContent = dict.ctaNote;
           document.getElementById('otp-input').placeholder = dict.otpPlaceholder;
           document.getElementById('otp-confirm-btn').textContent = dict.otpConfirmBtn;
@@ -762,8 +813,11 @@
               : verifyState === 'pending'
                 ? dict.emailBtnPending
                 : dict.payLabelIdle;
-          document.getElementById('install-fallback-title').textContent = dict.installFallbackTitle;
-          document.getElementById('install-fallback-body').textContent = dict.installFallbackBody;
+          document.getElementById('install-fallback-title').textContent = dict.statusTitle;
+          document.getElementById('install-fallback-body').textContent = '';
+          var fallbackQr = document.getElementById('install-fallback-qr');
+          fallbackQr.setAttribute('data-show', 'false');
+          fallbackQr.removeAttribute('src');
           document.getElementById('install-fallback-close').textContent = dict.installFallbackClose;
         }
 
@@ -785,6 +839,7 @@
         langButtons.forEach(function (b) {
           b.setAttribute('data-active', b.getAttribute('data-lang-code') === initialLang);
         });
+        restoreVerifiedState();
         applyLang(initialLang);
 
         // PWA A2HS
@@ -794,7 +849,36 @@
         var otpInput = document.getElementById('otp-input');
         var fallbackMask = document.getElementById('install-fallback-mask');
         var fallbackClose = document.getElementById('install-fallback-close');
+        var fallbackQr = document.getElementById('install-fallback-qr');
         var otpConfirmBtn = document.getElementById('otp-confirm-btn');
+        function cacheVerifiedState(email) {
+          try {
+            localStorage.setItem(VERIFY_CACHE_KEY, 'verified');
+            localStorage.setItem(VERIFIED_EMAIL_KEY, email || '');
+          } catch (e) {}
+        }
+        function clearVerifiedState() {
+          try {
+            localStorage.removeItem(VERIFY_CACHE_KEY);
+            localStorage.removeItem(VERIFIED_EMAIL_KEY);
+          } catch (e) {}
+        }
+        function restoreVerifiedState() {
+          try {
+            if (localStorage.getItem(VERIFY_CACHE_KEY) === 'verified') {
+              verifyState = 'verified';
+              var savedEmail = localStorage.getItem(VERIFIED_EMAIL_KEY) || '';
+              if (savedEmail && isValidEmail(savedEmail)) {
+                emailInput.value = savedEmail;
+              }
+              otpInput.setAttribute('data-active', 'true');
+            }
+          } catch (e) {}
+        }
+        function isMobileDevice() {
+          var ua = navigator.userAgent || '';
+          return /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(ua);
+        }
         function isIOSDevice() {
           var ua = navigator.userAgent || '';
           return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -808,14 +892,25 @@
           var minor = Number(m[2] || 0);
           return major > 16 || (major === 16 && minor >= 4);
         }
-        function openFallback(message) {
-          if (message) {
-            document.getElementById('install-fallback-body').textContent = message;
+        function openFallback(options) {
+          var opt = options || {};
+          var lang = page.getAttribute('data-lang') || 'zh';
+          var dict = strings[lang] || strings.zh;
+          document.getElementById('install-fallback-title').textContent = opt.title || dict.statusTitle;
+          document.getElementById('install-fallback-body').textContent = opt.message || '';
+          if (opt.qrSrc) {
+            fallbackQr.setAttribute('src', opt.qrSrc);
+            fallbackQr.setAttribute('data-show', 'true');
+          } else {
+            fallbackQr.setAttribute('data-show', 'false');
+            fallbackQr.removeAttribute('src');
           }
           fallbackMask.setAttribute('data-open', 'true');
         }
         function closeFallback() {
           fallbackMask.setAttribute('data-open', 'false');
+          fallbackQr.setAttribute('data-show', 'false');
+          fallbackQr.removeAttribute('src');
         }
         function shakeEmail() {
           emailInput.style.outline = '2px solid rgba(250,204,21,0.85)';
@@ -903,17 +998,18 @@
                 verifyState = 'idle';
                 otpInput.setAttribute('data-active', 'false');
                 applyLang(currentLang);
-                openFallback('发信失败，请检查配置或稍后再试。');
+                openFallback({ message: (strings[currentLang] || strings.zh).sendFailed });
                 return;
               }
-              openFallback('验证码已发出，请检查邮箱。');
+              openFallback({ message: (strings[currentLang] || strings.zh).sendSuccess });
             } catch (err) {
               stopResendTimer();
               resendLeftSec = 0;
               verifyState = 'idle';
+              clearVerifiedState();
               otpInput.setAttribute('data-active', 'false');
               applyLang(currentLang);
-              openFallback('发信失败，请检查配置或稍后再试。');
+              openFallback({ message: (strings[currentLang] || strings.zh).sendFailed });
             } finally {
               emailBtn.disabled = false;
             }
@@ -944,6 +1040,7 @@
             });
             if (res.ok && data.ok) {
               verifyState = 'verified';
+              cacheVerifiedState(emailInput.value.trim());
               otpInput.setAttribute('data-active', 'true');
               stopResendTimer();
               resendLeftSec = 0;
@@ -958,16 +1055,38 @@
 
         // 金色主按鈕：直接觸發系統安裝彈窗
         document.getElementById('pay-btn').addEventListener('click', function () {
+          var currentLang = page.getAttribute('data-lang') || 'zh';
+          var dict = strings[currentLang] || strings.zh;
+          var emailBox = document.getElementById('email-box');
+          if (!isMobileDevice()) {
+            var pageUrl = window.location.origin + window.location.pathname;
+            var qr = 'https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=' + encodeURIComponent(pageUrl);
+            openFallback({
+              title: dict.installGuideTitle,
+              message: dict.desktopInstallGuide,
+              qrSrc: qr,
+            });
+            return;
+          }
           if (verifyState !== 'verified') {
+            if (emailBox && typeof emailBox.scrollIntoView === 'function') {
+              emailBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             shakeEmail();
             return;
           }
-          if (!deferredPrompt && isIOS164Plus()) {
-            openFallback('发信失败，请检查配置或稍后再试。');
+          if (!deferredPrompt && isIOSDevice()) {
+            openFallback({
+              title: dict.installGuideTitle,
+              message: dict.installGuideIOS,
+            });
             return;
           }
           if (!deferredPrompt) {
-            openFallback('发信失败，请检查配置或稍后再试。');
+            openFallback({
+              title: dict.installGuideTitle,
+              message: dict.installGuideAndroid,
+            });
             return;
           }
           deferredPrompt.prompt();
