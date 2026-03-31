@@ -43,24 +43,31 @@ const otpStore = new Map();
 const MAIL_USER = process.env.MAIL_USER || '';
 const MAIL_PASS = process.env.MAIL_PASS || '';
 const MAIL_TO = process.env.MAIL_TO || MAIL_USER;
-const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+
+/** Railway Logs 對照：印出 Nodemailer 實際解析後的連線選項（含 port） */
+function logSmtpTransportDiag(m, tag) {
+  if (!m || !m.options) return;
+  console.log('Current Port:', m.options.port);
+  console.log('[SMTP_DIAG]', tag, {
+    service: m.options.service,
+    host: m.options.host,
+    port: m.options.port,
+    secure: m.options.secure,
+    requireTLS: m.options.requireTLS,
+  });
+}
 
 let mailer = null;
 if (MAIL_USER && MAIL_PASS) {
-  // 強制 587 + STARTTLS（不依賴 SMTP_PORT / SMTP_SECURE 環境變數，避免 Railway 變數不同步）
+  // Gmail App Password：使用內建 well-known（service: 'gmail'），通常比手動 host/port 更省事
   mailer = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: 587,
-    secure: false,
-    requireTLS: true,
+    service: 'gmail',
     auth: {
       user: MAIL_USER,
       pass: MAIL_PASS,
     },
   });
-  console.log(
-    `[SMTP] nodemailer: host=${SMTP_HOST} port=587 secure=false requireTLS=true (not from env)`,
-  );
+  logSmtpTransportDiag(mailer, 'startup');
 }
 
 // --- 核心 API ---
@@ -92,6 +99,7 @@ app.post('/api/notify', async (req, res) => {
     req.body?.text ||
     'A new Flash Ledger payment or quota event occurred. Please check your dashboard.';
   try {
+    logSmtpTransportDiag(mailer, 'notify_send');
     await mailer.sendMail({
       from: MAIL_USER,
       to: MAIL_TO || MAIL_USER,
@@ -137,6 +145,7 @@ app.post('/api/verify/send', async (req, res) => {
   const t = templates[lang] || templates.zh;
   const recipients = Array.from(new Set([email, MAIL_TO].filter(Boolean)));
   try {
+    logSmtpTransportDiag(mailer, 'verify_send');
     await mailer.sendMail({
       from: MAIL_USER,
       to: recipients.join(','),
